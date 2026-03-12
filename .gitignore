@@ -1,0 +1,45 @@
+# Local secrets
+.ssh/
+
+# Quartus project user/session files
+*.qws
+*.qsf
+*.jdi
+*.done
+*.sld
+*.smsg
+*.qmsg
+*.summary
+*.rpt
+*.pin
+*.eqn
+*.tan.*
+*.fit.*
+*.map.*
+*.sta.*
+*.flow.*
+*.asm.*
+*.jditmp
+*.hif
+*.html
+
+# Quartus databases and incremental builds
+db/
+incremental_db/
+
+# Quartus programming/output artifacts
+output_files/
+*.sof
+*.pof
+*.rbf
+*.rpd
+*.svf
+*.sdo
+
+# Generic simulation/temp artifacts
+transcript
+vsim.wlf
+*.wlf
+*.vcd
+*.bak
+*.tmp
