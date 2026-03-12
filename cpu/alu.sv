@@ -12,7 +12,6 @@ module alu (
     logic [15:0] temp1;
     logic [15:0] temp2;
     logic [15:0] temp3;
-    integer i;
 
     always_comb begin
         temp1 = {15'b0, cin};
@@ -27,13 +26,13 @@ module alu (
             3'b100: temp2 = alu_a ^ alu_b;
             3'b101: begin
                 temp2[0] = 1'b0;
-                for (i = 15; i >= 1; i = i - 1) begin
+                for (int i = 15; i >= 1; i = i - 1) begin
                     temp2[i] = alu_b[i-1];
                 end
             end
             3'b110: begin
                 temp2[15] = 1'b0;
-                for (i = 14; i >= 0; i = i - 1) begin
+                for (int i = 14; i >= 0; i = i - 1) begin
                     temp2[i] = alu_b[i+1];
                 end
             end
