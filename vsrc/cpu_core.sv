@@ -12,14 +12,23 @@ module cpu_core (
     output logic [15:0] address_bus,
     output logic [15:0] reg_data
 );
-    localparam logic [1:0] STATE_WRITE_HOLD = 2'b00;
-    localparam logic [1:0] STATE_WRITE_PC   = 2'b01;
-    localparam logic [1:0] STATE_WRITE_IR   = 2'b10;
-    localparam logic [1:0] STATE_WRITE_ALU  = 2'b11;
+    localparam logic [1:0] ADDRESS_HOLD     = 2'b00;
+    localparam logic [1:0] ADDRESS_FROM_PC  = 2'b01;
+    localparam logic [1:0] ADDRESS_FROM_ALU = 2'b11;
 
-    logic fc, fz, fv, fs, flag_c, flag_z, flag_v, flag_s, en_pc, en_reg, alu_cin;
-    logic wre;
-    logic [1:0] sst, sci, state_write_select;
+    logic alu_carry_flag;
+    logic alu_zero_flag;
+    logic alu_overflow_flag;
+    logic alu_sign_flag;
+    logic carry_flag;
+    logic zero_flag;
+    logic overflow_flag;
+    logic sign_flag;
+    logic en_pc;
+    logic en_reg;
+    logic alu_cin;
+    logic memory_write_enable;
+    logic [1:0] sst, carry_in_select, address_write_select;
     logic [2:0] execution_stage, alu_func, alu_in_sel;
     logic [3:0] d_reg, s_reg;
     logic [7:0] offset_8;
@@ -30,30 +39,29 @@ module cpu_core (
     controller u_controller (
         .execution_stage(execution_stage),
         .instruction(instruction),
-        .c(flag_c),
-        .z(flag_z),
-        .v(flag_v),
-        .s(flag_s),
+        .c(carry_flag),
+        .z(zero_flag),
+        .v(overflow_flag),
+        .s(sign_flag),
         .dest_reg(d_reg),
         .sour_reg(s_reg),
         .offset(offset_8),
         .sst(sst),
-        .sci(sci),
-        .state_write_select(state_write_select),
+        .carry_in_select(carry_in_select),
+        .address_write_select(address_write_select),
+        .instruction_load_enable(instruction_load_enable),
         .alu_func(alu_func),
         .alu_in_sel(alu_in_sel),
         .en_reg(en_reg),
         .en_pc(en_pc),
-        .wr(wre)
+        .wr(memory_write_enable)
     );
 
-    always_comb begin
-        wr = wre;
-        c = flag_c;
-        z = flag_z;
-        v = flag_v;
-        s = flag_s;
-    end
+    assign wr = memory_write_enable;
+    assign c  = carry_flag;
+    assign z  = zero_flag;
+    assign v  = overflow_flag;
+    assign s  = sign_flag;
 
     alu u_alu (
         .cin(alu_cin),
@@ -67,24 +75,24 @@ module cpu_core (
         .operand_a(alu_operand_a),
         .operand_b(alu_operand_b),
         .alu_out(alu_out),
-        .c(fc),
-        .z(fz),
-        .v(fv),
-        .s(fs)
+        .c(alu_carry_flag),
+        .z(alu_zero_flag),
+        .v(alu_overflow_flag),
+        .s(alu_sign_flag)
     );
 
     flag_reg u_flag_reg (
         .sst(sst),
-        .c(fc),
-        .z(fz),
-        .v(fv),
-        .s(fs),
+        .next_carry_flag(alu_carry_flag),
+        .next_zero_flag(alu_zero_flag),
+        .next_overflow_flag(alu_overflow_flag),
+        .next_sign_flag(alu_sign_flag),
         .clk(clk),
         .reset(reset),
-        .flag_c(flag_c),
-        .flag_z(flag_z),
-        .flag_v(flag_v),
-        .flag_s(flag_s)
+        .carry_flag(carry_flag),
+        .zero_flag(zero_flag),
+        .overflow_flag(overflow_flag),
+        .sign_flag(sign_flag)
     );
 
     execution_stage_fsm u_execution_stage_fsm (
@@ -101,13 +109,12 @@ module cpu_core (
         .input_b(alu_func),
         .input_c(alu_in_sel),
         .cin(alu_cin),
-        .state_write_select(state_write_select),
+        .address_write_select(address_write_select),
+        .instruction_load_enable(instruction_load_enable),
         .pc_en(en_pc),
         .reg_en(en_reg),
         .q(reg_test)
     );
-
-    assign instruction_load_enable = (state_write_select == STATE_WRITE_IR);
 
     instruction_reg u_instruction_reg (
         .memory_data(mem_data),
@@ -118,8 +125,8 @@ module cpu_core (
     );
 
     t1 u_carry_in_mux (
-        .flag_c(flag_c),
-        .sci(sci),
+        .flag_c(carry_flag),
+        .carry_in_select(carry_in_select),
         .alu_cin(alu_cin)
     );
 
@@ -128,20 +135,16 @@ module cpu_core (
         .offset_16(offset_16)
     );
 
-    bus_dir u_bus_dir (
-        .wr(wre),
-        .alu_out(alu_out),
-        .data_bus(data_bus),
-        .mem_data(mem_data)
-    );
+    assign data_bus = (memory_write_enable == 1'b0) ? alu_out : 16'hzzzz;
+    assign mem_data = data_bus;
 
     always_ff @(posedge clk or negedge reset) begin
         if (reset == 1'b0) begin
             address_bus <= 16'h0000;
         end else begin
-            case (state_write_select)
-                STATE_WRITE_PC:  address_bus <= pc_bus;
-                STATE_WRITE_ALU: address_bus <= alu_out;
+            case (address_write_select)
+                ADDRESS_FROM_PC:  address_bus <= pc_bus;
+                ADDRESS_FROM_ALU: address_bus <= alu_out;
                 default: begin
                 end
             endcase

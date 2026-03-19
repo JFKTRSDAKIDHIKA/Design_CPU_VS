@@ -22,22 +22,22 @@ w1773909792
 8vsrc/address_reg.sv
 Fvsrc/address_reg.sv
 !i122 9
-Z2 L0 1 26
-Z3 VDg1SIo80bB@j0V0VzS_@n1
-Z4 OL;L;2025.2;82
+L0 1 26
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+Z3 OL;L;2025.2;82
 r1
 !s85 0
 31
 !s108 1773910044.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_dir.sv|vsrc/address_reg.sv|vsrc/alu.sv|
-Z5 !s90 -sv|-f|vsrc\files.f|vsrc\cpu_tb.sv|
+Z4 !s90 -sv|-f|vsrc\files.f|vsrc\cpu_tb.sv|
 !i113 0
-Z6 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-Z7 tCvgOpt 0 defaultOptions 1085333592
+Z5 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z6 tCvgOpt 0 defaultOptions 1085333592
 valu
-Z8 2vsrc/alu.sv|vsrc/bus_dir.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
+Z7 2vsrc/alu.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
 R1
-Z9 !s110 1773910349
+Z8 !s110 1773911439
 !i10b 1
 !s100 @T@=aH0Tnnk7RgV?NV7:I3
 IiJFig_FYF<8eW6?FL@W1G0
@@ -46,19 +46,19 @@ R0
 w1773910034
 8vsrc/alu.sv
 Fvsrc/alu.sv
-!i122 11
+!i122 16
 L0 1 94
+R2
 R3
-R4
 r1
 !s85 0
 31
-Z10 !s108 1773910349.000000
-!s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_dir.sv|vsrc/alu.sv|
-R5
+Z9 !s108 1773911439.000000
+!s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/alu.sv|
+R4
 !i113 0
+R5
 R6
-R7
 var
 2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
 R1
@@ -68,47 +68,47 @@ R1
 Ie:iIb3EInj_WeaBUn@QTC1
 S1
 R0
-Z11 w1773908180
+Z10 w1773908180
 8vsrc/ar.sv
 Fvsrc/ar.sv
 !i122 7
 L0 1 21
+R2
 R3
-R4
 r1
 !s85 0
 31
 !s108 1773909601.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
-R5
+R4
 !i113 0
+R5
 R6
-R7
 vbus_dir
-R8
+2vsrc/alu.sv|vsrc/bus_dir.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
 R1
-R9
+!s110 1773910706
 !i10b 1
 !s100 dkQ8al8adXL7EmA`HJX830
 I4?bg3jIYYWhb^NRDj9`z92
 S1
 R0
-R11
+R10
 8vsrc/bus_dir.sv
 Fvsrc/bus_dir.sv
-!i122 11
-Z12 L0 1 12
+!i122 13
+Z11 L0 1 12
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-Z13 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_dir.sv|vsrc/alu.sv|
-R5
+!s108 1773910706.000000
+!s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_dir.sv|vsrc/alu.sv|
+R4
 !i113 0
+R5
 R6
-R7
 vbus_mux
 2vsrc/alu.sv|vsrc/address_reg.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
 R1
@@ -118,126 +118,126 @@ R1
 IdRoA7=Wgi<Q_jIn?E:cbL3
 S1
 R0
-R11
+R10
 8vsrc/bus_mux.sv
 Fvsrc/bus_mux.sv
 !i122 8
 L0 1 43
+R2
 R3
-R4
 r1
 !s85 0
 31
 !s108 1773909804.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/address_reg.sv|vsrc/alu.sv|
-R5
+R4
 !i113 0
+R5
 R6
-R7
 vcontroller
-R8
+R7
 R1
-R9
+R8
 !i10b 1
-!s100 iNPzUkGb@8K7Rb8mL^<d53
-Iko7ooS29T3kPkAj8`QKK=1
+!s100 2Q^cWm>Egbm[P[nje]O6H2
+IE3TXM@K5b;Y@EXeE62Q0V2
 S1
 R0
-Z14 w1773909793
+w1773911115
 8vsrc/controller.sv
 Fvsrc/controller.sv
-!i122 11
-L0 1 183
+!i122 16
+L0 1 185
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vcpu_core
-R8
-R1
 R9
+Z12 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/alu.sv|
+R4
+!i113 0
+R5
+R6
+vcpu_core
+R7
+R1
+R8
 !i10b 1
-!s100 6jc3GgD4aIK5UFXYQHM@L2
-IQDWAW[C_i1F7_fkb^bVLl3
+!s100 ]^SjDPEE>DK`TV7]mCb2[2
+I9Vgg9zCVA22=Bkc`k4Oeb1
 S1
 R0
-w1773910342
+Z13 w1773911438
 8vsrc/cpu_core.sv
 Fvsrc/cpu_core.sv
-!i122 11
-L0 1 186
+!i122 16
+L0 1 189
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vcpu_tb
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vcpu_tb
+R7
+R1
+R8
 !i10b 1
 !s100 5?jf`07Qe_79egnCJn7i71
 IAkk:3NNM:Y73HK?`QDHDO2
 S1
 R0
-R11
+R10
 8vsrc\cpu_tb.sv
 Fvsrc\cpu_tb.sv
-!i122 11
+!i122 16
 L0 1 97
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vcpu_top
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vcpu_top
+R7
+R1
+R8
 !i10b 1
 !s100 E;?2G6M@7AbgHeL_bOQe81
 I[SYlmB3hIIHaSneBXm<`30
 S1
 R0
-R11
+R10
 8vsrc/cpu_top.sv
 Fvsrc/cpu_top.sv
-!i122 11
+!i122 16
 L0 1 29
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vexecution_stage_fsm
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vexecution_stage_fsm
+R7
+R1
+R8
 !i10b 1
 !s100 f@cYWMSz2D`K=OH[XL`HA1
 I<7e9H]Ai;C2JOVi?d9]Cg2
@@ -246,48 +246,48 @@ R0
 w1773909296
 8vsrc/execution_stage_fsm.sv
 Fvsrc/execution_stage_fsm.sv
-!i122 11
-Z15 L0 1 51
+!i122 16
+Z14 L0 1 51
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vflag_reg
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vflag_reg
+R7
+R1
+R8
 !i10b 1
-!s100 5Jd1=UZd:6A>?3zmONUm_1
-ILK8QiHYdZE=z3R`H85PUR2
+!s100 1O:dR3zc8EA1L:zM@?iGZ2
+InCP?m2]8NYW15b2;G9di31
 S1
 R0
-R11
+R13
 8vsrc/flag_reg.sv
 Fvsrc/flag_reg.sv
-!i122 11
+!i122 16
 L0 1 35
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vinstruction_reg
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vinstruction_reg
+R7
+R1
+R8
 !i10b 1
 !s100 3e=:i?0IVb_QVhRd5A0Z02
 I@3`3W>Z5YMhmQbZX7a_dm0
@@ -296,19 +296,19 @@ R0
 w1773908644
 8vsrc/instruction_reg.sv
 Fvsrc/instruction_reg.sv
-!i122 11
-Z16 L0 1 15
+!i122 16
+Z15 L0 1 15
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
+R9
+R12
+R4
 !i113 0
+R5
 R6
-R7
 vir
 2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/ir.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/timer.sv|vsrc\cpu_tb.sv
 R1
@@ -318,172 +318,172 @@ R1
 I:<KgVgH3Na;DTQEHkm[WF1
 S1
 R0
-R11
+R10
 8vsrc/ir.sv
 Fvsrc/ir.sv
 !i122 0
 L0 1 19
+R2
 R3
-R4
 r1
 !s85 0
 31
 !s108 1773908573.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/timer.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/ir.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
-R5
+R4
 !i113 0
+R5
 R6
-R7
 vpc
-R8
+R7
 R1
-R9
+R8
 !i10b 1
 !s100 elo:7aJgImG^MbE3XkQbb1
 IE`k[e^eD;RFK1>dk]ioJ30
 S1
 R0
-R11
+R10
 8vsrc/pc.sv
 Fvsrc/pc.sv
-!i122 11
-R16
+!i122 16
+R15
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vreg_file
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vreg_file
+R7
+R1
+R8
 !i10b 1
 !s100 cH7ilWoV<jAXhLOFTbl[91
 IGDAcYOF=IfM3bBXVK;?Oj2
 S1
 R0
-R11
+R10
 8vsrc/reg_file.sv
 Fvsrc/reg_file.sv
-!i122 11
+!i122 16
 L0 1 31
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vreg_out
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vreg_out
+R7
+R1
+R8
 !i10b 1
 !s100 85Uj_FS`Jgml==<Zi0zj82
 IE>YaD:jE7^Q?4JdgN5PlD2
 S1
 R0
-R11
+R10
 8vsrc/reg_out.sv
 Fvsrc/reg_out.sv
-!i122 11
+!i122 16
 L0 1 37
-R3
-R4
-r1
-!s85 0
-31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vreg_testa
-R8
-R1
-R9
-!i10b 1
-!s100 30:_@J>a;a>WanYg[9L^b3
-IJzz8cRSNl>YXVF9LE4_1F0
-S1
-R0
-R14
-8vsrc/reg_testa.sv
-Fvsrc/reg_testa.sv
-!i122 11
 R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vt1
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vreg_testa
+R7
+R1
+R8
 !i10b 1
-!s100 ?>SOeQYkgdRKJXXjb6:bS3
-ICalo1d=8=LokSdDYz>N`H0
+!s100 2G>[F@=6U]Oednh6RD??V2
+Ic@^14KUNdaDbIbbFAZQ0@0
 S1
 R0
-R11
-8vsrc/t1.sv
-Fvsrc/t1.sv
-!i122 11
-L0 1 14
+w1773910626
+8vsrc/reg_testa.sv
+Fvsrc/reg_testa.sv
+!i122 16
+L0 1 27
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
-!i113 0
-R6
-R7
-vt2
-R8
-R1
 R9
+R12
+R4
+!i113 0
+R5
+R6
+vt1
+R7
+R1
+R8
+!i10b 1
+!s100 PMVbL4JOb@4`h]<N8X]I00
+I06eiQVO19Odg@EQ8o:HL<2
+S1
+R0
+w1773910706
+8vsrc/t1.sv
+Fvsrc/t1.sv
+!i122 16
+L0 1 14
+R2
+R3
+r1
+!s85 0
+31
+R9
+R12
+R4
+!i113 0
+R5
+R6
+vt2
+R7
+R1
+R8
 !i10b 1
 !s100 B28nZ^8UhNY:0XdWPf0Pk1
 I3<g4gejzR]jcQQI^;bc;Z1
 S1
 R0
-R11
+R10
 8vsrc/t2.sv
 Fvsrc/t2.sv
-!i122 11
-R12
+!i122 16
+R11
+R2
 R3
-R4
 r1
 !s85 0
 31
-R10
-R13
-R5
+R9
+R12
+R4
 !i113 0
+R5
 R6
-R7
 vtimer
 2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/timer.sv|vsrc\cpu_tb.sv
 R1
@@ -497,15 +497,15 @@ w1773908896
 8vsrc/timer.sv
 Fvsrc/timer.sv
 !i122 2
-R15
+R14
+R2
 R3
-R4
 r1
 !s85 0
 31
 !s108 1773908902.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/timer.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
-R5
+R4
 !i113 0
+R5
 R6
-R7

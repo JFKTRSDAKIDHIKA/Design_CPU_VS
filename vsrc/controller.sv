@@ -9,8 +9,9 @@ module controller (
     output logic [3:0]  sour_reg,
     output logic [7:0]  offset,
     output logic [1:0]  sst,
-    output logic [1:0]  sci,
-    output logic [1:0]  state_write_select,
+    output logic [1:0]  carry_in_select,
+    output logic [1:0]  address_write_select,
+    output logic        instruction_load_enable,
     output logic [2:0]  alu_func,
     output logic [2:0]  alu_in_sel,
     output logic        en_reg,
@@ -34,15 +35,14 @@ module controller (
     localparam logic [1:0] SST_SET_C               = 2'b10;
 
     // Selects the carry-in source for the ALU: 0, constant 1, or the current carry flag.
-    localparam logic [1:0] SCI_ZERO                = 2'b00;
-    localparam logic [1:0] SCI_ONE                 = 2'b01;
-    localparam logic [1:0] SCI_FLAG_C              = 2'b10;
+    localparam logic [1:0] CARRY_IN_ZERO                = 2'b00;
+    localparam logic [1:0] CARRY_IN_ONE                 = 2'b01;
+    localparam logic [1:0] CARRY_IN_FLAG_C              = 2'b10;
 
-    // Controls which state element captures a new value this cycle.
-    localparam logic [1:0] STATE_WRITE_HOLD        = 2'b00;
-    localparam logic [1:0] STATE_WRITE_PC          = 2'b01;
-    localparam logic [1:0] STATE_WRITE_IR          = 2'b10;
-    localparam logic [1:0] STATE_WRITE_ALU         = 2'b11;
+    // Selects how the address register is updated this cycle.
+    localparam logic [1:0] ADDRESS_HOLD            = 2'b00;
+    localparam logic [1:0] ADDRESS_FROM_PC         = 2'b01;
+    localparam logic [1:0] ADDRESS_FROM_ALU        = 2'b11;
 
     localparam logic [2:0] ALU_ADD                 = 3'b000;
     localparam logic [2:0] ALU_SUB                 = 3'b001;
@@ -79,28 +79,30 @@ module controller (
         dest_reg_index   = instruction[7:4];
         source_reg_index = instruction[3:0];
 
-        dest_reg         = 4'h0;
-        sour_reg         = 4'h0;
-        offset           = 8'h00;
-        sst              = SST_HOLD;
-        sci              = SCI_ZERO;
-        state_write_select = STATE_WRITE_HOLD;
-        alu_func         = ALU_ADD;
-        alu_in_sel       = ALU_IN_REGS;
-        wr               = 1'b1;
-        writeback_select = WRITEBACK_HOLD;
+        dest_reg              = 4'h0;
+        sour_reg              = 4'h0;
+        offset                = 8'h00;
+        sst                   = SST_HOLD;
+        carry_in_select       = CARRY_IN_ZERO;
+        address_write_select  = ADDRESS_HOLD;
+        instruction_load_enable = 1'b0;
+        alu_func              = ALU_ADD;
+        alu_in_sel            = ALU_IN_REGS;
+        wr                    = 1'b1;
+        writeback_select      = WRITEBACK_HOLD;
 
         case (execution_stage)
             STAGE_RESET_INIT: begin
             end
+            // 这个是把PC驱动地址线？是的话加个英文注释
             STAGE_FETCH_ADDRESS: begin
-                sci              = SCI_ONE;
-                writeback_select = WRITEBACK_PC;
-                alu_in_sel       = ALU_IN_PC;
-                state_write_select = STATE_WRITE_PC;
+                carry_in_select       = CARRY_IN_ONE;
+                writeback_select     = WRITEBACK_PC;
+                alu_in_sel           = ALU_IN_PC;
+                address_write_select = ADDRESS_FROM_PC;
             end
             STAGE_FETCH_DECODE: begin
-                state_write_select = STATE_WRITE_IR;
+                instruction_load_enable = 1'b1;
             end
             STAGE_EXECUTE_SINGLE: begin
                 case (opcode)
@@ -112,12 +114,12 @@ module controller (
                     8'h05: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_AND; end
                     8'h06: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_OR; end
                     8'h07: begin use_reg_operands(); writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_SR; end
-                    8'h08: begin use_reg_operands(); sci = SCI_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SUB; end
-                    8'h09: begin use_reg_operands(); sci = SCI_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; end
+                    8'h08: begin use_reg_operands(); carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SUB; end
+                    8'h09: begin use_reg_operands(); carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; end
                     8'h0A: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHL; end
                     8'h0B: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHR; end
-                    8'h0C: begin use_reg_operands(); sci = SCI_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; end
-                    8'h0D: begin use_reg_operands(); sci = SCI_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
+                    8'h0C: begin use_reg_operands(); carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; end
+                    8'h0D: begin use_reg_operands(); carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
                     8'h40: begin offset = imm8; writeback_select = WRITEBACK_PC; alu_in_sel = ALU_IN_BR; end
                     8'h44: begin offset = imm8; writeback_select = c ? WRITEBACK_PC : WRITEBACK_HOLD; alu_in_sel = ALU_IN_BR; end
                     8'h45: begin offset = imm8; writeback_select = c ? WRITEBACK_HOLD : WRITEBACK_PC; alu_in_sel = ALU_IN_BR; end
@@ -136,18 +138,18 @@ module controller (
                 case (opcode)
                     8'h80,
                     8'h81: begin
-                        sci              = SCI_ONE;
-                        writeback_select = WRITEBACK_PC;
-                        alu_in_sel       = ALU_IN_PC;
-                        state_write_select = STATE_WRITE_PC;
+                        carry_in_select       = CARRY_IN_ONE;
+                        writeback_select     = WRITEBACK_PC;
+                        alu_in_sel           = ALU_IN_PC;
+                        address_write_select = ADDRESS_FROM_PC;
                     end
                     8'h82: begin
-                        alu_in_sel = ALU_IN_SR;
-                        state_write_select = STATE_WRITE_ALU;
+                        alu_in_sel           = ALU_IN_SR;
+                        address_write_select = ADDRESS_FROM_ALU;
                     end
                     8'h83: begin
-                        alu_in_sel = ALU_IN_DR;
-                        state_write_select = STATE_WRITE_ALU;
+                        alu_in_sel           = ALU_IN_DR;
+                        address_write_select = ADDRESS_FROM_ALU;
                     end
                     default: begin
                     end
