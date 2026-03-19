@@ -37,23 +37,23 @@ Z6 tCvgOpt 0 defaultOptions 1085333592
 valu
 Z7 2vsrc/alu.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
 R1
-Z8 !s110 1773912127
+Z8 !s110 1773912891
 !i10b 1
-!s100 @T@=aH0Tnnk7RgV?NV7:I3
-IiJFig_FYF<8eW6?FL@W1G0
+!s100 Xohcii`i`cYiF9<Ao>I@21
+IA_G9ilGh=Qh_NW`llHjbn1
 S1
 R0
-w1773910034
+Z9 w1773912792
 8vsrc/alu.sv
 Fvsrc/alu.sv
-!i122 23
-L0 1 94
+!i122 24
+L0 1 112
 R2
 R3
 r1
 !s85 0
 31
-Z9 !s108 1773912127.000000
+Z10 !s108 1773912891.000000
 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/alu.sv|
 R4
 !i113 0
@@ -68,7 +68,7 @@ R1
 Ie:iIb3EInj_WeaBUn@QTC1
 S1
 R0
-Z10 w1773908180
+Z11 w1773908180
 8vsrc/ar.sv
 Fvsrc/ar.sv
 !i122 7
@@ -93,11 +93,11 @@ R1
 I4?bg3jIYYWhb^NRDj9`z92
 S1
 R0
-R10
+R11
 8vsrc/bus_dir.sv
 Fvsrc/bus_dir.sv
 !i122 13
-Z11 L0 1 12
+Z12 L0 1 12
 R2
 R3
 r1
@@ -118,7 +118,7 @@ R1
 IdRoA7=Wgi<Q_jIn?E:cbL3
 S1
 R0
-R10
+R11
 8vsrc/bus_mux.sv
 Fvsrc/bus_mux.sv
 !i122 8
@@ -139,22 +139,22 @@ R7
 R1
 R8
 !i10b 1
-!s100 N]mb0ccmbBQN1CN=N07ln0
-IAU^g=PVICKfo[bAGGN_Qg1
+!s100 A]33Kz774<;FnboI>iHSX1
+Ij^hbJaSAzRmYf4d]4V:@^0
 S1
 R0
-w1773912126
+Z13 w1773912863
 8vsrc/controller.sv
 Fvsrc/controller.sv
-!i122 23
-L0 1 186
+!i122 24
+L0 1 219
 R2
 R3
 r1
 !s85 0
 31
-R9
-Z12 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/alu.sv|
+R10
+Z14 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/alu.sv|
 R4
 !i113 0
 R5
@@ -164,22 +164,22 @@ R7
 R1
 R8
 !i10b 1
-!s100 iY2S2H@n59XEaMmUVf[6P3
-IN^olCF?4_W40c[z2iadE]2
+!s100 @dJ25F=k[d[51m7>M`<Wb1
+I^1zQ@bQ0Me?6;hVSMjDCR1
 S1
 R0
-w1773912045
+R13
 8vsrc/cpu_core.sv
 Fvsrc/cpu_core.sv
-!i122 23
-L0 1 189
+!i122 24
+L0 1 202
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -189,22 +189,22 @@ R7
 R1
 R8
 !i10b 1
-!s100 5?jf`07Qe_79egnCJn7i71
-IAkk:3NNM:Y73HK?`QDHDO2
+!s100 iMZb3@>;U:M=hN5neOJkV2
+IQT:?eg<E1:ABk`cAXe?6F3
 S1
 R0
-R10
+w1773912886
 8vsrc\cpu_tb.sv
 Fvsrc\cpu_tb.sv
-!i122 23
-L0 1 97
+!i122 24
+L0 1 100
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -218,18 +218,18 @@ R8
 I[SYlmB3hIIHaSneBXm<`30
 S1
 R0
-R10
+R11
 8vsrc/cpu_top.sv
 Fvsrc/cpu_top.sv
-!i122 23
+!i122 24
 L0 1 29
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -239,22 +239,22 @@ R7
 R1
 R8
 !i10b 1
-!s100 f@cYWMSz2D`K=OH[XL`HA1
-I<7e9H]Ai;C2JOVi?d9]Cg2
+!s100 akO9ZQKFN=cJYeRA^]0c40
+I_>SIcCWUSl@`fKV4QPa393
 S1
 R0
-w1773909296
+R9
 8vsrc/execution_stage_fsm.sv
 Fvsrc/execution_stage_fsm.sv
-!i122 23
-Z13 L0 1 51
+!i122 24
+L0 1 68
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -271,15 +271,15 @@ R0
 w1773911438
 8vsrc/flag_reg.sv
 Fvsrc/flag_reg.sv
-!i122 23
+!i122 24
 L0 1 35
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -296,15 +296,15 @@ R0
 w1773908644
 8vsrc/instruction_reg.sv
 Fvsrc/instruction_reg.sv
-!i122 23
-Z14 L0 1 15
+!i122 24
+Z15 L0 1 15
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -318,7 +318,7 @@ R1
 I:<KgVgH3Na;DTQEHkm[WF1
 S1
 R0
-R10
+R11
 8vsrc/ir.sv
 Fvsrc/ir.sv
 !i122 0
@@ -343,18 +343,18 @@ R8
 IE`k[e^eD;RFK1>dk]ioJ30
 S1
 R0
-R10
+R11
 8vsrc/pc.sv
 Fvsrc/pc.sv
-!i122 23
-R14
+!i122 24
+R15
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -368,18 +368,18 @@ R8
 IGDAcYOF=IfM3bBXVK;?Oj2
 S1
 R0
-R10
+R11
 8vsrc/reg_file.sv
 Fvsrc/reg_file.sv
-!i122 23
+!i122 24
 L0 1 31
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -393,18 +393,18 @@ R8
 IE>YaD:jE7^Q?4JdgN5PlD2
 S1
 R0
-R10
+R11
 8vsrc/reg_out.sv
 Fvsrc/reg_out.sv
-!i122 23
+!i122 24
 L0 1 37
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -414,22 +414,22 @@ R7
 R1
 R8
 !i10b 1
-!s100 2G>[F@=6U]Oednh6RD??V2
-Ic@^14KUNdaDbIbbFAZQ0@0
+!s100 <;W=?9UVcCOEoE7i_PCA]0
+ICPd8PB0UI5MNlY0fML1C]1
 S1
 R0
-w1773910626
+R13
 8vsrc/reg_testa.sv
 Fvsrc/reg_testa.sv
-!i122 23
+!i122 24
 L0 1 27
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -446,15 +446,15 @@ R0
 w1773910706
 8vsrc/t1.sv
 Fvsrc/t1.sv
-!i122 23
+!i122 24
 L0 1 14
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -468,18 +468,18 @@ R8
 I3<g4gejzR]jcQQI^;bc;Z1
 S1
 R0
-R10
+R11
 8vsrc/t2.sv
 Fvsrc/t2.sv
-!i122 23
-R11
+!i122 24
+R12
 R2
 R3
 r1
 !s85 0
 31
-R9
-R12
+R10
+R14
 R4
 !i113 0
 R5
@@ -497,7 +497,7 @@ w1773908896
 8vsrc/timer.sv
 Fvsrc/timer.sv
 !i122 2
-R13
+L0 1 51
 R2
 R3
 r1

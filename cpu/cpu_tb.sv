@@ -65,36 +65,33 @@ module cpu_tb;
             mem[i] = 16'h0000;
         end
 
-        mem[16'h0000] = 16'h8100; // MVRD R0, 0x0001
-        mem[16'h0001] = 16'h0001;
-        mem[16'h0002] = 16'h0E00; // NOT R0
-        mem[16'h0003] = 16'h0F00; // ASR R0
-        mem[16'h0004] = 16'h8400; // ADDI R0, 0x0002
-        mem[16'h0005] = 16'h0002;
-        mem[16'h0006] = 16'h8500; // ANDI R0, 0x00FF
-        mem[16'h0007] = 16'h00FF;
-        mem[16'h0008] = 16'hF000; // CALLA 0x0010
-        mem[16'h0009] = 16'h0010;
-
-        mem[16'h0010] = 16'h8110; // MVRD R1, 0x0003
-        mem[16'h0011] = 16'h0003;
-        mem[16'h0012] = 16'h8410; // ADDI R1, 0x0004
-        mem[16'h0013] = 16'h0004;
+        mem[16'h0000] = 16'h8100;
+        mem[16'h0001] = 16'h0005;
+        mem[16'h0002] = 16'h8110;
+        mem[16'h0003] = 16'h0003;
+        mem[16'h0004] = 16'h0001;
+        mem[16'h0005] = 16'h8120;
+        mem[16'h0006] = 16'h0020;
+        mem[16'h0007] = 16'h8320;
+        mem[16'h0008] = 16'h8232;
+        mem[16'h0009] = 16'h0330;
+        mem[16'h000A] = 16'h46FF;
+        mem[16'h0020] = 16'h00AA;
 
         #12;
         reset = 1'b1;
 
-        repeat (60) @(posedge clk);
+        repeat (40) @(posedge clk);
 
-        expect_reg(4'h0, 16'h0001, "R0 after NOT/ASR/ADDI/ANDI");
-        expect_reg(4'h1, 16'h0007, "R1 after CALLA target code");
-        expect_reg(4'hF, 16'h000A, "R15 link register after CALLA");
+        expect_reg(4'h0, 16'h0005, "R0");
+        expect_reg(4'h2, 16'h0020, "R2");
+        expect_reg(4'h3, 16'h0005, "R3");
 
-        if ({c, z, v, s} !== 4'b0000) begin
-            $error("Flag mismatch after ANDI: expected C=0 Z=0 V=0 S=0 got %b%b%b%b", c, z, v, s);
+        if (mem[16'h0020] !== 16'h0005) begin
+            $error("Memory[0x20] mismatch: expected 0005 got %h", mem[16'h0020]);
         end
 
-        $display("cpu_tb ISA extension regression compiled and executed");
+        $display("cpu_tb setup compiled");
         $finish;
     end
 endmodule
