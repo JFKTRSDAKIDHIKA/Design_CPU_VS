@@ -1,0 +1,486 @@
+m255
+K4
+z2
+!s11f vlog 2025.2 2025.05, May 31 2025
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dD:/CPUDesign/Design_CPU_VS
+valu
+Z1 2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/execution_stage_fsm.sv|vsrc\cpu_tb.sv
+Z2 DXx6 sv_std 3 std 0 22 @5XbY]_OacJl=`ToSm<M^0
+Z3 !s110 1773909601
+!i10b 1
+!s100 QC:ckIN78R9LF4<3OX:E<1
+I>8LJ3kg;[jkWY=3DHloFQ1
+S1
+R0
+Z4 w1773908180
+8vsrc/alu.sv
+Fvsrc/alu.sv
+!i122 7
+L0 1 50
+Z5 VDg1SIo80bB@j0V0VzS_@n1
+Z6 OL;L;2025.2;82
+r1
+!s85 0
+31
+Z7 !s108 1773909601.000000
+!s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
+Z8 !s90 -sv|-f|vsrc\files.f|vsrc\cpu_tb.sv|
+!i113 0
+Z9 o-sv -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z10 tCvgOpt 0 defaultOptions 1085333592
+var
+R1
+R2
+R3
+!i10b 1
+!s100 XeaR:9CNEV]ZWWPdma[:03
+Ie:iIb3EInj_WeaBUn@QTC1
+S1
+R0
+R4
+8vsrc/ar.sv
+Fvsrc/ar.sv
+!i122 7
+L0 1 21
+R5
+R6
+r1
+!s85 0
+31
+R7
+Z11 !s107 vsrc\\cpu_tb.sv|vsrc/execution_stage_fsm.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
+R8
+!i113 0
+R9
+R10
+vbus_dir
+R1
+R2
+R3
+!i10b 1
+!s100 dkQ8al8adXL7EmA`HJX830
+I4?bg3jIYYWhb^NRDj9`z92
+S1
+R0
+R4
+8vsrc/bus_dir.sv
+Fvsrc/bus_dir.sv
+!i122 7
+Z12 L0 1 12
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vbus_mux
+R1
+R2
+R3
+!i10b 1
+!s100 1FI^MX6RJ8DZWeI:N78zS3
+IdRoA7=Wgi<Q_jIn?E:cbL3
+S1
+R0
+R4
+8vsrc/bus_mux.sv
+Fvsrc/bus_mux.sv
+!i122 7
+L0 1 43
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vcontroller
+R1
+R2
+R3
+!i10b 1
+!s100 ;9Ki`_6n5A:_dACkUg@kI2
+IMjPU`R9XZAb]NCY0cbTj`0
+S1
+R0
+w1773909594
+8vsrc/controller.sv
+Fvsrc/controller.sv
+!i122 7
+L0 1 183
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vcpu_core
+R1
+R2
+R3
+!i10b 1
+!s100 >>8QeLlDDdLzTFK5N_jeJ2
+IcLAM[`Yfk8Ee5]`55kPLC0
+S1
+R0
+w1773909331
+8vsrc/cpu_core.sv
+Fvsrc/cpu_core.sv
+!i122 7
+L0 1 182
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vcpu_tb
+R1
+R2
+R3
+!i10b 1
+!s100 5?jf`07Qe_79egnCJn7i71
+IAkk:3NNM:Y73HK?`QDHDO2
+S1
+R0
+R4
+8vsrc\cpu_tb.sv
+Fvsrc\cpu_tb.sv
+!i122 7
+L0 1 97
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vcpu_top
+R1
+R2
+R3
+!i10b 1
+!s100 E;?2G6M@7AbgHeL_bOQe81
+I[SYlmB3hIIHaSneBXm<`30
+S1
+R0
+R4
+8vsrc/cpu_top.sv
+Fvsrc/cpu_top.sv
+!i122 7
+L0 1 29
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vexecution_stage_fsm
+R1
+R2
+R3
+!i10b 1
+!s100 f@cYWMSz2D`K=OH[XL`HA1
+I<7e9H]Ai;C2JOVi?d9]Cg2
+S1
+R0
+w1773909296
+8vsrc/execution_stage_fsm.sv
+Fvsrc/execution_stage_fsm.sv
+!i122 7
+Z13 L0 1 51
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vflag_reg
+R1
+R2
+R3
+!i10b 1
+!s100 5Jd1=UZd:6A>?3zmONUm_1
+ILK8QiHYdZE=z3R`H85PUR2
+S1
+R0
+R4
+8vsrc/flag_reg.sv
+Fvsrc/flag_reg.sv
+!i122 7
+L0 1 35
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vinstruction_reg
+R1
+R2
+R3
+!i10b 1
+!s100 3e=:i?0IVb_QVhRd5A0Z02
+I@3`3W>Z5YMhmQbZX7a_dm0
+S1
+R0
+w1773908644
+8vsrc/instruction_reg.sv
+Fvsrc/instruction_reg.sv
+!i122 7
+Z14 L0 1 15
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vir
+2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/ir.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/timer.sv|vsrc\cpu_tb.sv
+R2
+!s110 1773908574
+!i10b 1
+!s100 K`0G^gKkVa=6j2g=MUazD3
+I:<KgVgH3Na;DTQEHkm[WF1
+S1
+R0
+R4
+8vsrc/ir.sv
+Fvsrc/ir.sv
+!i122 0
+L0 1 19
+R5
+R6
+r1
+!s85 0
+31
+!s108 1773908573.000000
+!s107 vsrc\\cpu_tb.sv|vsrc/timer.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/ir.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
+R8
+!i113 0
+R9
+R10
+vpc
+R1
+R2
+R3
+!i10b 1
+!s100 elo:7aJgImG^MbE3XkQbb1
+IE`k[e^eD;RFK1>dk]ioJ30
+S1
+R0
+R4
+8vsrc/pc.sv
+Fvsrc/pc.sv
+!i122 7
+R14
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vreg_file
+R1
+R2
+R3
+!i10b 1
+!s100 cH7ilWoV<jAXhLOFTbl[91
+IGDAcYOF=IfM3bBXVK;?Oj2
+S1
+R0
+R4
+8vsrc/reg_file.sv
+Fvsrc/reg_file.sv
+!i122 7
+L0 1 31
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vreg_out
+R1
+R2
+R3
+!i10b 1
+!s100 85Uj_FS`Jgml==<Zi0zj82
+IE>YaD:jE7^Q?4JdgN5PlD2
+S1
+R0
+R4
+8vsrc/reg_out.sv
+Fvsrc/reg_out.sv
+!i122 7
+L0 1 37
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vreg_testa
+R1
+R2
+R3
+!i10b 1
+!s100 ^JlngmhdD`c]PPZ@CGQ[@1
+I;kzVVITl4?z249>5BJClo0
+S1
+R0
+R4
+8vsrc/reg_testa.sv
+Fvsrc/reg_testa.sv
+!i122 7
+L0 1 26
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vt1
+R1
+R2
+R3
+!i10b 1
+!s100 ?>SOeQYkgdRKJXXjb6:bS3
+ICalo1d=8=LokSdDYz>N`H0
+S1
+R0
+R4
+8vsrc/t1.sv
+Fvsrc/t1.sv
+!i122 7
+L0 1 14
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vt2
+R1
+R2
+R3
+!i10b 1
+!s100 B28nZ^8UhNY:0XdWPf0Pk1
+I3<g4gejzR]jcQQI^;bc;Z1
+S1
+R0
+R4
+8vsrc/t2.sv
+Fvsrc/t2.sv
+!i122 7
+R12
+R5
+R6
+r1
+!s85 0
+31
+R7
+R11
+R8
+!i113 0
+R9
+R10
+vtimer
+2vsrc/alu.sv|vsrc/ar.sv|vsrc/bus_dir.sv|vsrc/bus_mux.sv|vsrc/controller.sv|vsrc/cpu_core.sv|vsrc/cpu_top.sv|vsrc/flag_reg.sv|vsrc/instruction_reg.sv|vsrc/pc.sv|vsrc/reg_file.sv|vsrc/reg_out.sv|vsrc/reg_testa.sv|vsrc/t1.sv|vsrc/t2.sv|vsrc/timer.sv|vsrc\cpu_tb.sv
+R2
+!s110 1773908902
+!i10b 1
+!s100 5HSoNRJZBUgLT]o?U0_H20
+IdZF2_HXX?GhJc?3CK<Co63
+S1
+R0
+w1773908896
+8vsrc/timer.sv
+Fvsrc/timer.sv
+!i122 2
+R13
+R5
+R6
+r1
+!s85 0
+31
+!s108 1773908902.000000
+!s107 vsrc\\cpu_tb.sv|vsrc/timer.sv|vsrc/t2.sv|vsrc/t1.sv|vsrc/reg_testa.sv|vsrc/reg_out.sv|vsrc/reg_file.sv|vsrc/pc.sv|vsrc/instruction_reg.sv|vsrc/flag_reg.sv|vsrc/cpu_top.sv|vsrc/cpu_core.sv|vsrc/controller.sv|vsrc/bus_mux.sv|vsrc/bus_dir.sv|vsrc/ar.sv|vsrc/alu.sv|
+R8
+!i113 0
+R9
+R10

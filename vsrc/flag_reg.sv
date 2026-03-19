@@ -28,7 +28,6 @@ module flag_reg (
                 2'b01: flag_c <= 1'b0;
                 2'b10: flag_c <= 1'b1;
                 2'b11: begin
-                    // hold
                 end
             endcase
         end

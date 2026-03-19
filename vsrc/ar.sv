@@ -1,5 +1,6 @@
-module ir (
-    input  logic [15:0] mem_data,
+module ar (
+    input  logic [15:0] alu_out,
+    input  logic [15:0] pc,
     input  logic [1:0]  rec,
     input  logic        clk,
     input  logic        reset,
@@ -10,9 +11,9 @@ module ir (
             q <= 16'h0000;
         end else begin
             case (rec)
-                2'b10: q <= mem_data;
+                2'b01: q <= pc;
+                2'b11: q <= alu_out;
                 default: begin
-                    // hold
                 end
             endcase
         end
