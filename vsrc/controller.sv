@@ -10,7 +10,7 @@ module controller (
     output logic [7:0]  offset,
     output logic [1:0]  sst,
     output logic [1:0]  sci,
-    output logic [1:0]  rec,
+    output logic [1:0]  state_write_select,
     output logic [2:0]  alu_func,
     output logic [2:0]  alu_in_sel,
     output logic        en_reg,
@@ -39,10 +39,10 @@ module controller (
     localparam logic [1:0] SCI_FLAG_C              = 2'b10;
 
     // Controls which state element captures a new value this cycle.
-    localparam logic [1:0] REC_HOLD                = 2'b00;
-    localparam logic [1:0] REC_LOAD_PC             = 2'b01;
-    localparam logic [1:0] REC_LOAD_IR             = 2'b10;
-    localparam logic [1:0] REC_LOAD_ALU            = 2'b11;
+    localparam logic [1:0] STATE_WRITE_HOLD        = 2'b00;
+    localparam logic [1:0] STATE_WRITE_PC          = 2'b01;
+    localparam logic [1:0] STATE_WRITE_IR          = 2'b10;
+    localparam logic [1:0] STATE_WRITE_ALU         = 2'b11;
 
     localparam logic [2:0] ALU_ADD                 = 3'b000;
     localparam logic [2:0] ALU_SUB                 = 3'b001;
@@ -84,7 +84,7 @@ module controller (
         offset           = 8'h00;
         sst              = SST_HOLD;
         sci              = SCI_ZERO;
-        rec              = REC_HOLD;
+        state_write_select = STATE_WRITE_HOLD;
         alu_func         = ALU_ADD;
         alu_in_sel       = ALU_IN_REGS;
         wr               = 1'b1;
@@ -97,10 +97,10 @@ module controller (
                 sci              = SCI_ONE;
                 writeback_select = WRITEBACK_PC;
                 alu_in_sel       = ALU_IN_PC;
-                rec              = REC_LOAD_PC;
+                state_write_select = STATE_WRITE_PC;
             end
             STAGE_FETCH_DECODE: begin
-                rec = REC_LOAD_IR;
+                state_write_select = STATE_WRITE_IR;
             end
             STAGE_EXECUTE_SINGLE: begin
                 case (opcode)
@@ -139,15 +139,15 @@ module controller (
                         sci              = SCI_ONE;
                         writeback_select = WRITEBACK_PC;
                         alu_in_sel       = ALU_IN_PC;
-                        rec              = REC_LOAD_PC;
+                        state_write_select = STATE_WRITE_PC;
                     end
                     8'h82: begin
                         alu_in_sel = ALU_IN_SR;
-                        rec        = REC_LOAD_ALU;
+                        state_write_select = STATE_WRITE_ALU;
                     end
                     8'h83: begin
                         alu_in_sel = ALU_IN_DR;
-                        rec        = REC_LOAD_ALU;
+                        state_write_select = STATE_WRITE_ALU;
                     end
                     default: begin
                     end
@@ -181,3 +181,4 @@ module controller (
         en_pc  = writeback_select[1];
     end
 endmodule
+

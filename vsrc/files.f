@@ -1,7 +1,5 @@
 vsrc/alu.sv
-vsrc/ar.sv
 vsrc/bus_dir.sv
-vsrc/bus_mux.sv
 vsrc/controller.sv
 vsrc/cpu_core.sv
 vsrc/cpu_top.sv
