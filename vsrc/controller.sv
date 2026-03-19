@@ -14,8 +14,8 @@ module controller (
     output logic        instruction_load_enable,
     output logic [2:0]  alu_func,
     output logic [2:0]  alu_in_sel,
-    output logic        en_reg,
-    output logic        en_pc,
+    output logic        reg_write_enable,
+    output logic        pc_write_enable,
     output logic        wr
 );
     localparam logic [2:0] STAGE_RESET_INIT        = 3'b100;
@@ -35,9 +35,9 @@ module controller (
     localparam logic [1:0] SST_SET_C               = 2'b10;
 
     // Selects the carry-in source for the ALU: 0, constant 1, or the current carry flag.
-    localparam logic [1:0] CARRY_IN_ZERO                = 2'b00;
-    localparam logic [1:0] CARRY_IN_ONE                 = 2'b01;
-    localparam logic [1:0] CARRY_IN_FLAG_C              = 2'b10;
+    localparam logic [1:0] CARRY_IN_ZERO           = 2'b00;
+    localparam logic [1:0] CARRY_IN_ONE            = 2'b01;
+    localparam logic [1:0] CARRY_IN_FLAG_C         = 2'b10;
 
     // Selects how the address register is updated this cycle.
     localparam logic [1:0] ADDRESS_HOLD            = 2'b00;
@@ -76,8 +76,8 @@ module controller (
     always_comb begin
         opcode  = instruction[15:8];
         imm8    = instruction[7:0];
-        dest_reg_index   = instruction[7:4];
-        source_reg_index = instruction[3:0];
+        dest_reg_index        = instruction[7:4];
+        source_reg_index      = instruction[3:0];
 
         dest_reg              = 4'h0;
         sour_reg              = 4'h0;
@@ -94,13 +94,14 @@ module controller (
         case (execution_stage)
             STAGE_RESET_INIT: begin
             end
-            // 这个是把PC驱动地址线？是的话加个英文注释
+            // Drive the address bus from the current PC value and increment PC for the next fetch.
             STAGE_FETCH_ADDRESS: begin
-                carry_in_select       = CARRY_IN_ONE;
+                carry_in_select      = CARRY_IN_ONE;
                 writeback_select     = WRITEBACK_PC;
                 alu_in_sel           = ALU_IN_PC;
                 address_write_select = ADDRESS_FROM_PC;
             end
+            // Latch the instruction word returned by memory; this CPU assumes the fetch completes in one cycle.
             STAGE_FETCH_DECODE: begin
                 instruction_load_enable = 1'b1;
             end
@@ -138,7 +139,7 @@ module controller (
                 case (opcode)
                     8'h80,
                     8'h81: begin
-                        carry_in_select       = CARRY_IN_ONE;
+                        carry_in_select      = CARRY_IN_ONE;
                         writeback_select     = WRITEBACK_PC;
                         alu_in_sel           = ALU_IN_PC;
                         address_write_select = ADDRESS_FROM_PC;
@@ -179,8 +180,10 @@ module controller (
             end
         endcase
 
-        en_reg = writeback_select[0];
-        en_pc  = writeback_select[1];
+        reg_write_enable = writeback_select[0];
+        pc_write_enable  = writeback_select[1];
     end
 endmodule
+
+
 

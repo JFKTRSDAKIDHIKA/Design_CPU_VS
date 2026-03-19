@@ -24,8 +24,8 @@ module cpu_core (
     logic zero_flag;
     logic overflow_flag;
     logic sign_flag;
-    logic en_pc;
-    logic en_reg;
+    logic pc_write_enable;
+    logic reg_write_enable;
     logic alu_cin;
     logic memory_write_enable;
     logic [1:0] sst, carry_in_select, address_write_select;
@@ -52,8 +52,8 @@ module cpu_core (
         .instruction_load_enable(instruction_load_enable),
         .alu_func(alu_func),
         .alu_in_sel(alu_in_sel),
-        .en_reg(en_reg),
-        .en_pc(en_pc),
+        .reg_write_enable(reg_write_enable),
+        .pc_write_enable(pc_write_enable),
         .wr(memory_write_enable)
     );
 
@@ -111,8 +111,8 @@ module cpu_core (
         .cin(alu_cin),
         .address_write_select(address_write_select),
         .instruction_load_enable(instruction_load_enable),
-        .pc_en(en_pc),
-        .reg_en(en_reg),
+        .pc_en(pc_write_enable),
+        .reg_en(reg_write_enable),
         .q(reg_test)
     );
 
@@ -153,7 +153,7 @@ module cpu_core (
 
     pc u_pc (
         .alu_out(alu_out),
-        .en(en_pc),
+        .en(pc_write_enable),
         .clk(clk),
         .reset(reset),
         .q(pc_bus)
@@ -176,7 +176,7 @@ module cpu_core (
     reg_file u_reg_file (
         .clk(clk),
         .reset(reset),
-        .write_en(en_reg),
+        .write_en(reg_write_enable),
         .write_sel(d_reg),
         .dest_sel(d_reg),
         .source_sel(s_reg),
@@ -187,3 +187,4 @@ module cpu_core (
         .debug_data(reg_inout)
     );
 endmodule
+
