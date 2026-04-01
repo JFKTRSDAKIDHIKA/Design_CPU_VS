@@ -8,7 +8,7 @@ module cpu_core (
     output logic        s,
     input  logic [1:0]  sel,
     input  logic [3:0]  reg_sel,
-    inout  logic [15:0] data_bus,
+    inout  wire [15:0] data_bus,
     output logic [15:0] address_bus,
     output logic [15:0] reg_data
 );

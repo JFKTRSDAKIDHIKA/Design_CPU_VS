@@ -70,13 +70,6 @@ module controller (
     logic [3:0] source_reg_index;                     // 源寄存器编号: instruction[3:0]
     logic [1:0] writeback_select;                     // 内部写回选择(用于生成reg/pc写使能)
 
-    task automatic use_reg_operands;
-        begin
-            dest_reg = dest_reg_index;
-            sour_reg = source_reg_index;
-        end
-    endtask
-
     always_comb begin
         opcode                  = instruction[15:8]; // 解析opcode
         imm8                    = instruction[7:0];  // 解析立即数/偏移
@@ -112,22 +105,23 @@ module controller (
             //单字指令
             STAGE_EXECUTE_SINGLE: begin
                 case (opcode)
-                    8'h00: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
-                    8'h01: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
-                    8'h02: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_AND; end
-                    8'h03: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_SUB; end
-                    8'h04: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_XOR; end
-                    8'h05: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_AND; end
-                    8'h06: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_OR; end
-                    8'h07: begin use_reg_operands(); writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_SR; end
-                    8'h08: begin use_reg_operands(); carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SUB; end
-                    8'h09: begin use_reg_operands(); carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; end
-                    8'h0A: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHL; end
-                    8'h0B: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHR; end
-                    8'h0C: begin use_reg_operands(); carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; end
-                    8'h0D: begin use_reg_operands(); carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
-                    8'h0E: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_NOT; end//添加的NOT指令
-                    8'h0F: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_ASR; end//添加的ASR指令
+                    8'h00: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
+                    8'h00: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
+                    8'h01: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
+                    8'h02: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_AND; end
+                    8'h03: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_SUB; end
+                    8'h04: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_XOR; end
+                    8'h05: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_AND; end
+                    8'h06: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_OR; end
+                    8'h07: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_SR; end
+                    8'h08: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SUB; end
+                    8'h09: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; carry_in_select = CARRY_IN_ONE; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; end
+                    8'h0A: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHL; end
+                    8'h0B: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_SHR; end
+                    8'h0C: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; end
+                    8'h0D: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; carry_in_select = CARRY_IN_FLAG_C; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
+                    8'h0E: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_NOT; end//添加的NOT指令
+                    8'h0F: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_in_sel = ALU_IN_DR; alu_func = ALU_ASR; end//添加的ASR指令
                     8'h40: begin offset = imm8; writeback_select = WRITEBACK_PC; alu_in_sel = ALU_IN_BR; end
                     8'h44: begin offset = imm8; writeback_select = c ? WRITEBACK_PC : WRITEBACK_HOLD; alu_in_sel = ALU_IN_BR; end
                     8'h45: begin offset = imm8; writeback_select = c ? WRITEBACK_HOLD : WRITEBACK_PC; alu_in_sel = ALU_IN_BR; end
@@ -143,7 +137,8 @@ module controller (
             end
             //双字指令第一阶段准备好第二个操作数/地址/目标字 添加指令opcode:8'h84,8'h85
             STAGE_FETCH_SECOND_WORD: begin
-                use_reg_operands();
+                dest_reg = dest_reg_index;
+                sour_reg = source_reg_index;
                 case (opcode)
                     // 对于立即数/地址在下一字的双字指令：
                     // 将PC送到地址总线取第二字，并同时PC自增。
@@ -173,7 +168,8 @@ module controller (
             end
             //双字指令第二阶段执行操作
             STAGE_EXECUTE_DOUBLE: begin
-                use_reg_operands();
+                dest_reg = dest_reg_index;
+                sour_reg = source_reg_index;
                 case (opcode)
                     // 完成访存/立即数装载：将取到的字写回寄存器。
                     8'h82,
