@@ -1,20 +1,20 @@
 module reg_testa (
-    input  logic [2:0] input_a,
-    input  logic [2:0] input_b,
-    input  logic [2:0] input_c,
-    input  logic       cin,
-    input  logic [1:0] address_write_select,
-    input  logic       instruction_load_enable,
-    input  logic       pc_en,
-    input  logic       reg_en,
-    input  logic       clk,
-    input  logic       reset,
+    input  logic [2:0]  input_a,
+    input  logic [3:0]  input_b,
+    input  logic [2:0]  input_c,
+    input  logic        cin,
+    input  logic [1:0]  address_write_select,
+    input  logic        instruction_load_enable,
+    input  logic        pc_en,
+    input  logic        reg_en,
+    input  logic        clk,
+    input  logic        reset,
     output logic [15:0] q
 );
     logic [15:0] temp;
 
     always_comb begin
-        temp = {1'b0, input_a, 1'b0, input_b, cin, input_c, address_write_select, instruction_load_enable, pc_en, reg_en};
+        temp = {input_a, input_b, cin, input_c, address_write_select, instruction_load_enable, pc_en, reg_en};
     end
 
     always_ff @(posedge clk or negedge reset) begin

@@ -12,7 +12,6 @@ module cpu_core (
     output logic [15:0] address_bus,
     output logic [15:0] reg_data
 );
-    localparam logic [1:0] ADDRESS_HOLD     = 2'b00;
     localparam logic [1:0] ADDRESS_FROM_PC  = 2'b01;
     localparam logic [1:0] ADDRESS_FROM_ALU = 2'b11;
 
@@ -28,12 +27,26 @@ module cpu_core (
     logic reg_write_enable;
     logic alu_cin;
     logic memory_write_enable;
-    logic [1:0] sst, carry_in_select, address_write_select;
-    logic [2:0] execution_stage, alu_func, alu_in_sel;
-    logic [3:0] d_reg, s_reg;
+    logic [1:0] sst;
+    logic [1:0] carry_in_select;
+    logic [1:0] address_write_select;
+    logic [2:0] execution_stage;
+    logic [3:0] alu_func;
+    logic [2:0] alu_in_sel;
+    logic [3:0] d_reg;
+    logic [3:0] s_reg;
     logic [7:0] offset_8;
-    logic [15:0] instruction, alu_operand_a, alu_operand_b, alu_out, reg_test, offset_16, pc_bus, mem_data;
-    logic [15:0] reg_inout, sr, dr;
+    logic [15:0] instruction;
+    logic [15:0] alu_operand_a;
+    logic [15:0] alu_operand_b;
+    logic [15:0] alu_out;
+    logic [15:0] reg_test;
+    logic [15:0] offset_16;
+    logic [15:0] pc_bus;
+    logic [15:0] mem_data;
+    logic [15:0] reg_inout;
+    logic [15:0] sr;
+    logic [15:0] dr;
     logic        instruction_load_enable;
 
     controller u_controller (
@@ -187,4 +200,3 @@ module cpu_core (
         .debug_data(reg_inout)
     );
 endmodule
-
