@@ -67,6 +67,62 @@
 - [`reports/coverage/`](/home/3dic/Design_CPU_VS/reports/coverage)
 - [`logs/uvm/`](/home/3dic/Design_CPU_VS/logs/uvm)
 
+## 基础 RTL 单步调试
+
+如果你想直接对 [`vsrc/`](/home/3dic/Design_CPU_VS/vsrc) 里的 CPU RTL 做轻量级 VCS 仿真，而不是跑整套 UVM，可以使用：
+
+```bash
+bash ./scripts/compile_basic_vcs.sh
+```
+
+按周期单步 1 步：
+
+```bash
+bash ./scripts/run_basic_vcs.sh ./sw/mult8.hex cycle 1
+```
+
+按指令单步 1 条：
+
+```bash
+STEP_MODE=inst STEPS=1 bash ./scripts/run_basic_vcs.sh ./sw/mult8.hex
+```
+
+默认会打印寄存器快照，并在结束时打印一段内存窗口。常用 plusargs/环境变量：
+
+- `+step_mode=cycle|inst` 或环境变量 `STEP_MODE`
+- `+steps=N` 或环境变量 `STEPS`
+- `+mem=<hex>` 指定程序镜像
+- `+mem_start=<hex>`、`+mem_words=<N>` 控制内存打印窗口
+- `+dump_regs=0|1`、`+dump_mem=0|1`、`+dump_final=0|1` 控制打印行为
+
+## 交互式 DPI 调试
+
+仓库还提供了一条基于 VCS + DPI-C 的交互式调试路径，SystemVerilog testbench 通过 `export "DPI-C"` 暴露调试接口，C++ REPL 负责命令解析与用户交互。
+
+构建：
+
+```bash
+make debug-build
+```
+
+运行：
+
+```bash
+make debug-run
+```
+
+常用命令：
+
+- `run` / `continue`
+- `step [n]`
+- `si [n]`
+- `info reg`
+- `info mem <addr> <len>` 或 `x <addr> [len]`
+- `break <pc>`
+- `load <hex_file>`
+- `wave on|off`
+- `quit`
+
 ## 当前验证范围
 
 已完成 directed + random 验证的 ISA 子集：
