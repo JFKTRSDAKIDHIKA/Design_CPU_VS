@@ -15,8 +15,5 @@
 
 ## Code Coverage
 
-- `overall_score`: `96.09%`
-- `merged_vdbs`: `13`
-- `report_dir`: `/home/3dic/Design_CPU_VS/reports/code_coverage/urgReport`
-- `metrics_enabled`: `line+cond+fsm+tgl+branch`
-- Notes: Merged code coverage report was generated successfully.
+- Status: `not_run`
+- Reason: ENABLE_CODE_COVERAGE was not set for this regression run.

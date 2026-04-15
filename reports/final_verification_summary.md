@@ -11,10 +11,7 @@
 - Functional coverage: `100.00%`
 - Instruction matrix: see [`reports/instruction_verification_matrix.md`](/home/3dic/Design_CPU_VS/reports/instruction_verification_matrix.md)
 - Coverage closure: see [`reports/coverage_closure.md`](/home/3dic/Design_CPU_VS/reports/coverage_closure.md)
-- Code coverage status: `available`
-- Code coverage overall score: `96.09%`
-- Code coverage merged VDBs: `13`
-- Code coverage report dir: `/home/3dic/Design_CPU_VS/reports/code_coverage/urgReport`
+- Code coverage status: `not_run`
 
 ## ISA In Scope
 
