@@ -61,3 +61,5 @@ ucli.key
 *.json
 *.hex
 *.js
+
+verilator_tb/obj_dir
