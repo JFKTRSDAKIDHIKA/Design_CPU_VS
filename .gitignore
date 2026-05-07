@@ -63,3 +63,4 @@ ucli.key
 *.js
 
 verilator_tb/obj_dir
+verilator_tb/obj_dir_diff

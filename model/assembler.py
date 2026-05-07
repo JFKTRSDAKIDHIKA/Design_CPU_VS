@@ -29,6 +29,8 @@ SINGLE_REG = {
     "INC": 0x09,
     "SHL": 0x0A,
     "SHR": 0x0B,
+    "NOT": 0x0E,
+    "ASR": 0x0F,
 }
 
 SINGLE_BRANCH = {
@@ -47,8 +49,11 @@ NO_OPERAND = {
 }
 
 DOUBLE_WORD = {
-    "JMPA": 0x8000,
-    "MVRD": 0x8100,
+    "JMPA":  0x8000,
+    "MVRD":  0x8100,
+    "ADDI":  0x8400,
+    "ANDI":  0x8500,
+    "CALLA": 0xF000,
 }
 
 TWO_CYCLE_SINGLE_WORD = {
@@ -209,6 +214,19 @@ def encode_line(line: SourceLine, label_table: dict[str, list[int]]) -> list[int
             raise ValueError("JMPA expects 1 operand")
         target = resolve_target(ops[0], line.address, label_table) & 0xFFFF
         return [DOUBLE_WORD[mnemonic], target]
+
+    if mnemonic == "CALLA":
+        if len(ops) != 1:
+            raise ValueError("CALLA expects 1 operand")
+        target = resolve_target(ops[0], line.address, label_table) & 0xFFFF
+        return [DOUBLE_WORD[mnemonic], target]
+
+    if mnemonic in {"ADDI", "ANDI"}:
+        if len(ops) != 2:
+            raise ValueError(f"{mnemonic} expects 2 operands (dr, imm16)")
+        dr = parse_register(ops[0])
+        imm = resolve_target(ops[1], line.address, label_table) & 0xFFFF
+        return [DOUBLE_WORD[mnemonic] | (dr << 4), imm]
 
     if mnemonic in {"LDRR", "STRR"}:
         if len(ops) != 2:
