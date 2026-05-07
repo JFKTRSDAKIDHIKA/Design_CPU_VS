@@ -73,8 +73,8 @@ module cpu_tb;
         mem[16'h0005] = 16'h0002;
         mem[16'h0006] = 16'h8500; // ANDI R0, 0x00FF
         mem[16'h0007] = 16'h00FF;
-        mem[16'h0008] = 16'hF000; // CALLA 0x0010
-        mem[16'h0009] = 16'h0010;
+        mem[16'h0008] = 16'hF006; // CALLA 0x0010 (base 0x000A + rel8 0x06)
+        mem[16'h0009] = 16'hCAFE; // reserved, ignored
 
         mem[16'h0010] = 16'h8110; // MVRD R1, 0x0003
         mem[16'h0011] = 16'h0003;

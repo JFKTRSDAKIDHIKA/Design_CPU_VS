@@ -218,8 +218,11 @@ def encode_line(line: SourceLine, label_table: dict[str, list[int]]) -> list[int
     if mnemonic == "CALLA":
         if len(ops) != 1:
             raise ValueError("CALLA expects 1 operand")
-        target = resolve_target(ops[0], line.address, label_table) & 0xFFFF
-        return [DOUBLE_WORD[mnemonic], target]
+        target = resolve_target(ops[0], line.address, label_table)
+        offset = target - line.address - 2
+        if not -128 <= offset <= 127:
+            raise ValueError(f"CALLA offset out of range at 0x{line.address:04X}")
+        return [DOUBLE_WORD[mnemonic] | (offset & 0xFF), 0x0000]
 
     if mnemonic in {"ADDI", "ANDI"}:
         if len(ops) != 2:

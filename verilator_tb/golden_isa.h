@@ -243,11 +243,11 @@ public:
             break;
         }
         // -------- C-class addition (CALLA) --------
-        case 0xF0: { // CALLA addr16: R15 <- pc_after_calla, PC <- addr16
-            uint16_t target = mem_[pc_];
-            uint16_t ret = (pc_ + 1) & 0xFFFF;  // address right after the second word
+        case 0xF0: { // CALLA rel8: R15 <- pc_after_calla, PC <- pc_after_calla + rel8
+            (void)mem_[pc_];                    // reserved second word, fetched but ignored
+            uint16_t ret = (pc_ + 1) & 0xFFFF;  // address right after the reserved word
             regs_[15] = ret;
-            pc_       = target;
+            pc_       = uint16_t(ret + int8_t(ir & 0xFF));
             // FLAGS unchanged (SST_HOLD)
             break;
         }

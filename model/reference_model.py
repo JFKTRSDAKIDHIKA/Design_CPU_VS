@@ -41,6 +41,8 @@ OPCODE_NAMES = {
     0x0B: "SHR",
     0x0C: "ADC",
     0x0D: "SBB",
+    0x0E: "NOT",
+    0x0F: "ASR",
     0x40: "JR",
     0x41: "JRS",
     0x43: "JRNS",
@@ -54,6 +56,9 @@ OPCODE_NAMES = {
     0x81: "MVRD",
     0x82: "LDRR",
     0x83: "STRR",
+    0x84: "ADDI",
+    0x85: "ANDI",
+    0xF0: "CALLA",
 }
 
 
@@ -123,12 +128,12 @@ class CpuModel:
             "sr": sr,
             "flags_before": flags_before.as_dict(),
             "flags_after": self.flags.as_dict(),
-            "branch_taken": pc_after != ((instr_addr + (2 if opcode in {0x80, 0x81} else 1)) & 0xFFFF)
+            "branch_taken": pc_after != ((instr_addr + (2 if opcode in {0x80, 0x81, 0x84, 0x85, 0xF0} else 1)) & 0xFFFF)
             if opcode in {0x41, 0x43, 0x44, 0x45, 0x46, 0x47}
-            else opcode in {0x40, 0x80},
-            "branch_target": pc_after if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80} else None,
-            "offset": sign8(instr & 0xFF) if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47} else None,
-            "immediate": extra_word if opcode in {0x80, 0x81} else None,
+            else opcode in {0x40, 0x80, 0xF0},
+            "branch_target": pc_after if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0} else None,
+            "offset": sign8(instr & 0xFF) if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0xF0} else None,
+            "immediate": extra_word if opcode in {0x80, 0x81, 0x84, 0x85} else None,
             "mem_kind": mem_kind,
             "mem_addr": mem_addr,
             "mem_data": mem_data,
@@ -146,7 +151,7 @@ class CpuModel:
             return "move"
         if opcode in {0x0A, 0x0B}:
             return "shift"
-        if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80}:
+        if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0}:
             return "control"
         if opcode in {0x78, 0x7A}:
             return "flag_control"
@@ -188,6 +193,23 @@ class CpuModel:
                 mem_kind = "WRITE"
                 mem_data = self.regs[sr] & 0xFFFF
                 self.mem[mem_addr] = mem_data
+            elif opcode == 0x84:
+                imm = self.mem[self.pc]
+                extra_word = imm
+                self.pc = (self.pc + 1) & 0xFFFF
+                a = imm
+                b = self.regs[dr]
+                full = b + a
+                result = full & 0xFFFF
+                self.regs[dr] = result
+                self._update_add_flags(a, b, result, 1 if full > 0xFFFF else 0)
+            elif opcode == 0x85:
+                imm = self.mem[self.pc]
+                extra_word = imm
+                self.pc = (self.pc + 1) & 0xFFFF
+                result = self.regs[dr] & imm
+                self.regs[dr] = result & 0xFFFF
+                self._update_logic_flags(result & 0xFFFF)
             elif opcode == 0x02:
                 result = self.regs[dr] & self.regs[sr]
                 self.regs[dr] = result & 0xFFFF
@@ -255,6 +277,19 @@ class CpuModel:
                 self.flags.z = 1 if result == 0 else 0
                 self.flags.v = 0
                 self.flags.s = 1 if result & 0x8000 else 0
+            elif opcode == 0x0E:
+                b = self.regs[dr]
+                result = (~b) & 0xFFFF
+                self.regs[dr] = result
+                self._update_logic_flags(result)
+            elif opcode == 0x0F:
+                b = self.regs[dr]
+                result = ((b & 0x8000) | (b >> 1)) & 0xFFFF
+                self.regs[dr] = result
+                self.flags.c = b & 0x1
+                self.flags.z = 1 if result == 0 else 0
+                self.flags.v = 0
+                self.flags.s = 1 if result & 0x8000 else 0
             elif opcode == 0x08:
                 b = self.regs[dr]
                 full = (b - 1) & 0x1FFFF
@@ -284,6 +319,11 @@ class CpuModel:
                 }[opcode]
                 if take:
                     self.pc = (self.pc + offset) & 0xFFFF
+            elif opcode == 0xF0:
+                extra_word = self.mem[self.pc]
+                self.pc = (self.pc + 1) & 0xFFFF
+                self.regs[15] = self.pc
+                self.pc = (self.pc + sign8(instr & 0x00FF)) & 0xFFFF
             else:
                 raise RuntimeError(f"Unsupported opcode 0x{opcode:02X} at PC 0x{instr_addr:04X}")
 

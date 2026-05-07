@@ -106,7 +106,6 @@ module controller (
             STAGE_EXECUTE_SINGLE: begin
                 case (opcode)
                     8'h00: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
-                    8'h00: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
                     8'h01: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_SUB; end
                     8'h02: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_AND; end
                     8'h03: begin dest_reg = dest_reg_index; sour_reg = source_reg_index; sst = SST_WRITE; writeback_select = WRITEBACK_HOLD; alu_func = ALU_SUB; end
@@ -205,16 +204,17 @@ module controller (
                     end
                 endcase
             end
-            // 在CALLA目标字取到后，保存返回地址。
+            // CALLA取完保留第二字后，保存返回地址。
             STAGE_SAVE_RETURN_ADDRESS: begin
                 dest_reg          = LINK_REGISTER_INDEX;
                 writeback_select  = WRITEBACK_REG;
                 alu_in_sel        = ALU_IN_PC;
             end
-            // 将上一周期取到的第二字装载到PC。
+            // CALLA的第二字保留不用；目标为第二字之后PC加signed rel8。
             STAGE_LOAD_CALL_TARGET: begin
+                offset           = imm8;
                 writeback_select = WRITEBACK_PC;
-                alu_in_sel       = ALU_IN_MEM;
+                alu_in_sel       = ALU_IN_BR;
             end
             default: begin
             end

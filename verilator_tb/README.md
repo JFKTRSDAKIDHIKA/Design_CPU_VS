@@ -1,6 +1,6 @@
-# Verilator C++ Testbench: `CALLA addr16`
+# Verilator C++ Testbench: `CALLA rel8`
 
-针对新增的 C 类指令 `CALLA addr16`（绝对调用，opcode `8'hF0`，双字编码）
+针对 C 类指令 `CALLA rel8`（第一字 `F0<signed rel8>`，第二字 reserved 且忽略）
 完成 Verilator 闭环验证。
 
 ## 文件
@@ -27,8 +27,9 @@ make run        # 执行测试，控制台打印 PASS/FAIL 摘要
 
 | 用例 | 目的 |
 | --- | --- |
-| `basic_calla_at_zero` | 复位后立即执行 `CALLA 0x0050`，校验 `R15=0x0002`，`PC=0x0050`，标志位为 0 |
-| `calla_after_some_setup` | 先 `MVRD R0,#42` 与 `STC` 设置上下文，再 `CALLA 0x0100`：校验 `R0=0x002A` 不被破坏，`R15=0x0005`，`PC=0x0100`，`C` 标志保留为 1 |
+| `forward_calla_reserved_ignored` | 复位后立即执行前向 `CALLA 0x0050`，校验 `R15=0x0002`，`PC=0x0050`，且非零 reserved 第二字被忽略 |
+| `calla_after_some_setup` | 先 `MVRD R0,#42` 与 `STC` 设置上下文，再 `CALLA 0x0040`：校验 `R0=0x002A` 不被破坏，`R15=0x0005`，`PC=0x0040`，`C` 标志保留为 1 |
+| `backward_calla` | 从 `0x0003` 反向调用到 `0x0000`，验证 signed rel8 负偏移 |
 | `nested_calla` | 连续两次 `CALLA`，校验内层调用后 `R15` 被新返回地址覆盖，`PC` 指向最内层目标 |
 | `calla_preserves_flags` | `STC` + `CALLA`，校验 `c=1, z=0, v=0, s=0` 全部保持 |
 | `calla_then_use_link_register` | 调用目标处用 `ADD R1,R15` 验证 `R15` 可正常作为源寄存器使用 |
@@ -36,12 +37,13 @@ make run        # 执行测试，控制台打印 PASS/FAIL 摘要
 ## 当前结果
 
 ```
-[PASS] basic_calla_at_zero
+[PASS] forward_calla_reserved_ignored
 [PASS] calla_after_some_setup
+[PASS] backward_calla
 [PASS] nested_calla
 [PASS] calla_preserves_flags
 [PASS] calla_then_use_link_register
-Total: 5  Passed: 5  Failed: 0
+Total: 6  Passed: 6  Failed: 0
 ```
 
 ## 已检查的 CALLA 行为约束（来自 ISA 规格）
@@ -52,9 +54,8 @@ Total: 5  Passed: 5  Failed: 0
 - `R15 <- PC + 2`：CALLA 占两个字 `[A, A+1]`，下一条指令在 `A+2`，
   `state4` 已把 PC 推进到 `A+2`，`state6` 通过 `ALU_IN_PC + cin=0` 把
   `A+2` 写入 R15。
-- `PC <- mem[A+1]`：`state4` 的 `address_write_select = ADDRESS_FROM_PC`
-  把地址寄存器锁存为 `A+1`，`state6/state7` 期间地址保持，`state7` 的
-  `ALU_IN_MEM + cin=0` 把目标字写入 PC。
+- `PC <- (A+2) + signext(rel8)`：`state4` 仍取第二字并把 PC 推进到 `A+2`；
+  `state7` 通过 `ALU_IN_BR + cin=0` 使用 IR 低 8 位相对偏移写回 PC。
 - 标志位不变：所有 CALLA 相关阶段都使用 `sst = SST_HOLD`，标志寄存器保持。
 
 ## 复用范围

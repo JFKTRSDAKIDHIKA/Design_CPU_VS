@@ -1,12 +1,12 @@
-// Verilator C++ testbench targeting the new C-class instruction `CALLA addr16`.
+// Verilator C++ testbench targeting the C-class instruction `CALLA rel8`.
 //
 // CALLA encoding (32-bit, two memory words):
-//   word0: 16'hF000  (opcode 8'hF0, 8'h00 ignored)
-//   word1: addr16    (absolute call target)
+//   word0: 16'hF0xx  (opcode 8'hF0, signed rel8 offset in low byte)
+//   word1: reserved  (fetched to preserve the double-word format, ignored)
 //
 // Architectural effect:
 //   R15 <- PC of the instruction following CALLA  (i.e., addr_calla + 2)
-//   PC  <- addr16
+//   PC  <- R15 + signext(rel8)
 //   FLAGS unchanged.
 //
 // The DUT is a multi-cycle CPU, so a single CALLA flows through stages:
@@ -43,6 +43,10 @@ constexpr uint8_t kStageExecuteSingle = 0b011;
 constexpr uint8_t kStageExecuteDouble = 0b111;
 // Last execute beat of the C-group (CALLA) flow.
 constexpr uint8_t kStageLoadCallTarget = 0b110;
+
+bool is_calla_ir(uint16_t ir) {
+    return ((ir >> 8) & 0xFF) == 0xF0;
+}
 
 struct TestResult {
     std::string name;
@@ -208,18 +212,20 @@ private:
 
 // ---- Individual tests ---------------------------------------------------
 
-TestResult test_basic_calla_at_zero() {
+TestResult test_forward_calla_reserved_ignored() {
     Tb tb;
-    // CALLA 0x0050 located at PC=0; arbitrary harmless instruction at target.
+    // CALLA +0x4E located at PC=0 targets 0x0050 from base 0x0002.
+    // The reserved word is deliberately nonzero and would be a bad absolute
+    // target if the old CALLA behavior leaked through.
     tb.load_program({
-        {0x0000, 0xF000}, // CALLA opcode word
-        {0x0001, 0x0050}, // target address
+        {0x0000, 0xF04E}, // CALLA 0x0050
+        {0x0001, 0xBEEF}, // reserved, ignored
         {0x0050, 0x40FE}, // JR -2 (busy loop) at the target
     });
 
     tb.apply_reset();
     bool ok_run = tb.run_through_calla(kMaxCycles);
-    TestResult r{"basic_calla_at_zero", false, ""};
+    TestResult r{"forward_calla_reserved_ignored", false, ""};
     if (!ok_run) {
         r.detail = "timeout waiting for CALLA to retire";
         return r;
@@ -238,23 +244,23 @@ TestResult test_basic_calla_at_zero() {
 
 TestResult test_calla_after_some_setup() {
     Tb tb;
-    // Setup R0=42, set carry, then CALLA 0x0100. Verify CALLA preserves carry
+    // Setup R0=42, set carry, then CALLA 0x0040. Verify CALLA preserves carry
     // and writes the right return address.
     // Program layout:
     //   0x0000: MVRD R0, #imm   (opcode 0x81: load mem[PC+1] into R0; double-word)
     //           Encoding: instruction[7:4] = R0 = 0x0, [3:0] = src(unused) = 0x0
     //   0x0001: 0x002A           (immediate 42)
     //   0x0002: STC               (opcode 0x7A, single word)
-    //   0x0003: CALLA 0x0100      (opcode 0xF0)
-    //   0x0004: 0x0100            (call target)
-    //   0x0100: JR -2             (halt loop at target)
+    //   0x0003: CALLA 0x0040      (rel8 = 0x3B from base 0x0005)
+    //   0x0004: reserved
+    //   0x0040: JR -2             (halt loop at target)
     tb.load_program({
         {0x0000, 0x8100}, // MVRD R0, #imm
         {0x0001, 0x002A}, // 42
         {0x0002, 0x7A00}, // STC
-        {0x0003, 0xF000}, // CALLA opcode
-        {0x0004, 0x0100}, // target
-        {0x0100, 0x40FE}, // JR -2
+        {0x0003, 0xF03B}, // CALLA 0x0040
+        {0x0004, 0x1234}, // reserved, ignored
+        {0x0040, 0x40FE}, // JR -2
     });
 
     tb.apply_reset();
@@ -264,8 +270,7 @@ TestResult test_calla_after_some_setup() {
     bool ok_run = false;
     bool saw_state7 = false;
     for (int i = 0; i < kMaxCycles; i++) {
-        // Watch for IR == 0xF000 entering state7.
-        if (tb.stage() == kStageLoadCallTarget && tb.ir() == 0xF000) {
+        if (tb.stage() == kStageLoadCallTarget && is_calla_ir(tb.ir())) {
             saw_state7 = true;
         }
         if (saw_state7 && tb.stage() != kStageLoadCallTarget) {
@@ -288,10 +293,46 @@ TestResult test_calla_after_some_setup() {
 
     char buf[256];
     std::snprintf(buf, sizeof(buf),
-        "R0=0x%04X (exp 0x002A), R15=0x%04X (exp 0x0005), PC=0x%04X (exp 0x0100), C=%d (exp 1)",
+        "R0=0x%04X (exp 0x002A), R15=0x%04X (exp 0x0005), PC=0x%04X (exp 0x0040), C=%d (exp 1)",
         r0, r15, pc, c_after);
     r.detail = buf;
-    r.pass = (r0 == 0x002A) && (r15 == 0x0005) && (pc == 0x0100) && c_after;
+    r.pass = (r0 == 0x002A) && (r15 == 0x0005) && (pc == 0x0040) && c_after;
+    return r;
+}
+
+TestResult test_backward_calla() {
+    Tb tb;
+    // Execute setup, then CALLA from 0x0003 back to 0x0000.
+    tb.load_program({
+        {0x0000, 0x8100}, {0x0001, 0x0007}, // MVRD R0, 7
+        {0x0002, 0x7A00},                   // STC
+        {0x0003, 0xF0FB}, {0x0004, 0xCAFE}, // CALLA 0x0000, reserved ignored
+    });
+
+    tb.apply_reset();
+
+    bool ok_run = false;
+    bool saw_state7 = false;
+    for (int i = 0; i < kMaxCycles; i++) {
+        if (tb.stage() == kStageLoadCallTarget && is_calla_ir(tb.ir())) {
+            saw_state7 = true;
+        }
+        if (saw_state7 && tb.stage() != kStageLoadCallTarget) {
+            ok_run = true;
+            break;
+        }
+        tb.tick();
+    }
+
+    TestResult r{"backward_calla", false, ""};
+    if (!ok_run) { r.detail = "timeout waiting for backward CALLA"; return r; }
+
+    char buf[256];
+    std::snprintf(buf, sizeof(buf),
+        "PC=0x%04X (exp 0x0000), R15=0x%04X (exp 0x0005), C=%d (exp 1)",
+        tb.pc(), tb.r15(), tb.flag_c());
+    r.detail = buf;
+    r.pass = (tb.pc() == 0x0000) && (tb.r15() == 0x0005) && tb.flag_c();
     return r;
 }
 
@@ -299,14 +340,14 @@ TestResult test_nested_calla() {
     Tb tb;
     // CALLA from main to subroutine A, then CALLA from A to B.
     // Expect R15 to hold the inner-most return address (B's caller).
-    //   0x0000: CALLA 0x0050    (call A)
-    //   0x0001: 0x0050
-    //   0x0050: CALLA 0x0080    (A immediately calls B)
-    //   0x0051: 0x0080
+    //   0x0000: CALLA 0x0050    (rel8 = 0x4E)
+    //   0x0001: reserved
+    //   0x0050: CALLA 0x0080    (rel8 = 0x2E)
+    //   0x0051: reserved
     //   0x0080: JR -2           (loop at B)
     tb.load_program({
-        {0x0000, 0xF000}, {0x0001, 0x0050},
-        {0x0050, 0xF000}, {0x0051, 0x0080},
+        {0x0000, 0xF04E}, {0x0001, 0x0000},
+        {0x0050, 0xF02E}, {0x0051, 0xFFFF},
         {0x0080, 0x40FE},
     });
 
@@ -316,7 +357,7 @@ TestResult test_nested_calla() {
     int calla_seen = 0;
     bool in_state7 = false;
     for (int i = 0; i < kMaxCycles; i++) {
-        if (tb.stage() == kStageLoadCallTarget && tb.ir() == 0xF000) {
+        if (tb.stage() == kStageLoadCallTarget && is_calla_ir(tb.ir())) {
             in_state7 = true;
         }
         if (in_state7 && tb.stage() != kStageLoadCallTarget) {
@@ -349,13 +390,13 @@ TestResult test_calla_preserves_flags() {
     Tb tb;
     // Set flags via STC, then CALLA, then verify flags after the call.
     //   0x0000: STC
-    //   0x0001: CALLA 0x0040
-    //   0x0002: 0x0040
+    //   0x0001: CALLA 0x0040      (rel8 = 0x3D)
+    //   0x0002: reserved
     //   0x0040: JR -2
     tb.load_program({
         {0x0000, 0x7A00},
-        {0x0001, 0xF000},
-        {0x0002, 0x0040},
+        {0x0001, 0xF03D},
+        {0x0002, 0xAAAA},
         {0x0040, 0x40FE},
     });
 
@@ -364,7 +405,7 @@ TestResult test_calla_preserves_flags() {
     bool in_state7 = false;
     bool ok_run = false;
     for (int i = 0; i < kMaxCycles; i++) {
-        if (tb.stage() == kStageLoadCallTarget && tb.ir() == 0xF000) {
+        if (tb.stage() == kStageLoadCallTarget && is_calla_ir(tb.ir())) {
             in_state7 = true;
         }
         if (in_state7 && tb.stage() != kStageLoadCallTarget) {
@@ -393,13 +434,13 @@ TestResult test_calla_then_use_link_register() {
     Tb tb;
     // After CALLA, use R15 as an operand of an ADD to verify it really got the
     // correct return address (and is generally usable by other instructions).
-    //   0x0000: CALLA 0x0030
-    //   0x0001: 0x0030
+    //   0x0000: CALLA 0x0030      (rel8 = 0x2E)
+    //   0x0001: reserved
     //   0x0002: <not executed; would have been the return point>
     //   0x0030: ADD R1, R15     ; R1 <- R1 + R15.  Opcode 0x00, dest=1, src=F
     //   0x0031: JR -2
     tb.load_program({
-        {0x0000, 0xF000}, {0x0001, 0x0030},
+        {0x0000, 0xF02E}, {0x0001, 0x0000},
         {0x0030, 0x001F},  // ADD R1, R15  (opcode 0x00, [7:4]=1, [3:0]=F)
         {0x0031, 0x40FE},
     });
@@ -436,8 +477,9 @@ int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
 
     std::vector<TestResult (*)()> tests = {
-        test_basic_calla_at_zero,
+        test_forward_calla_reserved_ignored,
         test_calla_after_some_setup,
+        test_backward_calla,
         test_nested_calla,
         test_calla_preserves_flags,
         test_calla_then_use_link_register,

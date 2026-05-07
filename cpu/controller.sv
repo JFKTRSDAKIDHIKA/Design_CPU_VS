@@ -209,16 +209,17 @@ module controller (
                     end
                 endcase
             end
-            // 在CALLA目标字取到后，保存返回地址。
+            // CALLA取完保留第二字后，保存返回地址。
             STAGE_SAVE_RETURN_ADDRESS: begin
                 dest_reg          = LINK_REGISTER_INDEX;
                 writeback_select  = WRITEBACK_REG;
                 alu_in_sel        = ALU_IN_PC;
             end
-            // 将上一周期取到的第二字装载到PC。
+            // CALLA的第二字保留不用；目标为第二字之后PC加signed rel8。
             STAGE_LOAD_CALL_TARGET: begin
+                offset           = imm8;
                 writeback_select = WRITEBACK_PC;
-                alu_in_sel       = ALU_IN_MEM;
+                alu_in_sel       = ALU_IN_BR;
             end
             default: begin
             end
