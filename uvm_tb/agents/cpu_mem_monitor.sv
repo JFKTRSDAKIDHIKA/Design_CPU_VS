@@ -1,6 +1,7 @@
 class cpu_mem_monitor extends uvm_component;
     localparam bit [2:0] STAGE_EXECUTE_SINGLE = 3'b011;
     localparam bit [2:0] STAGE_EXECUTE_DOUBLE = 3'b111;
+    localparam bit [2:0] STAGE_LOAD_CALL_TARGET = 3'b110;
     localparam bit [2:0] STAGE_FETCH_DECODE   = 3'b001;
 
     virtual cpu_core_if vif;
@@ -32,11 +33,11 @@ class cpu_mem_monitor extends uvm_component;
     endfunction
 
     function automatic bit is_double_word_opcode(bit [7:0] opcode);
-        return opcode inside {8'h80, 8'h81};
+        return opcode inside {8'h80, 8'h81, 8'h84, 8'h85, 8'hF0};
     endfunction
 
     function automatic bit is_branch_opcode(bit [7:0] opcode);
-        return opcode inside {8'h40, 8'h41, 8'h43, 8'h44, 8'h45, 8'h46, 8'h47, 8'h80};
+        return opcode inside {8'h40, 8'h41, 8'h43, 8'h44, 8'h45, 8'h46, 8'h47, 8'h80, 8'hF0, 8'hF1};
     endfunction
 
     function automatic bit [15:0] sign_extend8(bit [7:0] value);
@@ -78,6 +79,12 @@ class cpu_mem_monitor extends uvm_component;
         if (item.opcode == 8'h80) begin
             item.branch_taken  = 1'b1;
             item.branch_target = item.extra_word;
+        end else if (item.opcode == 8'hF0) begin
+            item.branch_taken  = 1'b1;
+            item.branch_target = pc;
+        end else if (item.opcode == 8'hF1) begin
+            item.branch_taken  = 1'b1;
+            item.branch_target = pc;
         end else if (item.opcode inside {8'h40, 8'h41, 8'h43, 8'h44, 8'h45, 8'h46, 8'h47}) begin
             bit [15:0] seq_pc = current_seq_pc;
             item.branch_taken  = (pc != seq_pc);
@@ -145,7 +152,7 @@ class cpu_mem_monitor extends uvm_component;
                 if ((vif.exec_stage == STAGE_EXECUTE_DOUBLE) && (vif.wr === 1'b0)) begin
                     emit_mem(1'b1);
                 end
-                if ((prev_stage == STAGE_EXECUTE_SINGLE) || (prev_stage == STAGE_EXECUTE_DOUBLE)) begin
+                if ((prev_stage == STAGE_EXECUTE_SINGLE) || (prev_stage == STAGE_EXECUTE_DOUBLE) || (prev_stage == STAGE_LOAD_CALL_TARGET)) begin
                     sample_retire();
                 end
                 if ((vif.exec_stage == STAGE_FETCH_DECODE) || (vif.exec_stage == 3'b101)) begin

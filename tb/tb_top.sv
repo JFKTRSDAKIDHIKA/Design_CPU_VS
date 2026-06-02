@@ -1,6 +1,7 @@
 module tb_top;
     localparam logic [2:0] STAGE_EXECUTE_SINGLE = 3'b011;
     localparam logic [2:0] STAGE_EXECUTE_DOUBLE = 3'b111;
+    localparam logic [2:0] STAGE_LOAD_CALL_TARGET = 3'b110;
     localparam int STOP_NONE = 0;
     localparam int STOP_STEP = 1;
     localparam int STOP_BREAKPOINT = 2;
@@ -93,9 +94,18 @@ module tb_top;
     end
 
     function automatic bit instruction_retired();
+        // Debugger-side "si" must stop on the same architectural retirement boundary
+        // used by the rest of the verification environment:
+        //   - single-word instructions retire after stage 011
+        //   - regular double-word instructions retire after stage 111
+        //   - CALLA retires after stage 110, once PC has been updated to the target
+        //
+        // If CALLA's final stage is omitted here, the debugger keeps running into the
+        // first instruction at the callee and makes it look like PC was over-incremented.
         instruction_retired =
             (prev_stage == STAGE_EXECUTE_SINGLE) ||
-            (prev_stage == STAGE_EXECUTE_DOUBLE);
+            (prev_stage == STAGE_EXECUTE_DOUBLE) ||
+            (prev_stage == STAGE_LOAD_CALL_TARGET);
     endfunction
 
     function automatic bit breakpoint_hit();

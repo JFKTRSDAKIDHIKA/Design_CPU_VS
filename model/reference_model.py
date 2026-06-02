@@ -59,6 +59,7 @@ OPCODE_NAMES = {
     0x84: "ADDI",
     0x85: "ANDI",
     0xF0: "CALLA",
+    0xF1: "RET",
 }
 
 
@@ -130,8 +131,8 @@ class CpuModel:
             "flags_after": self.flags.as_dict(),
             "branch_taken": pc_after != ((instr_addr + (2 if opcode in {0x80, 0x81, 0x84, 0x85, 0xF0} else 1)) & 0xFFFF)
             if opcode in {0x41, 0x43, 0x44, 0x45, 0x46, 0x47}
-            else opcode in {0x40, 0x80, 0xF0},
-            "branch_target": pc_after if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0} else None,
+            else opcode in {0x40, 0x80, 0xF0, 0xF1},
+            "branch_target": pc_after if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0, 0xF1} else None,
             "offset": sign8(instr & 0xFF) if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0xF0} else None,
             "immediate": extra_word if opcode in {0x80, 0x81, 0x84, 0x85} else None,
             "mem_kind": mem_kind,
@@ -151,7 +152,7 @@ class CpuModel:
             return "move"
         if opcode in {0x0A, 0x0B}:
             return "shift"
-        if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0}:
+        if opcode in {0x40, 0x41, 0x43, 0x44, 0x45, 0x46, 0x47, 0x80, 0xF0, 0xF1}:
             return "control"
         if opcode in {0x78, 0x7A}:
             return "flag_control"
@@ -324,6 +325,8 @@ class CpuModel:
                 self.pc = (self.pc + 1) & 0xFFFF
                 self.regs[15] = self.pc
                 self.pc = (self.pc + sign8(instr & 0x00FF)) & 0xFFFF
+            elif opcode == 0xF1:
+                self.pc = self.regs[15] & 0xFFFF
             else:
                 raise RuntimeError(f"Unsupported opcode 0x{opcode:02X} at PC 0x{instr_addr:04X}")
 

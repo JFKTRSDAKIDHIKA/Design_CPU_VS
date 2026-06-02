@@ -66,6 +66,8 @@ class cpu_coverage_collector extends uvm_component;
             bins mvrd   = {8'h81};
             bins ldrr   = {8'h82};
             bins strr   = {8'h83};
+            bins calla  = {8'hF0};
+            bins ret    = {8'hF1};
         }
         dst_class_cp: coverpoint current_dst_class { bins low = {0}; bins r9 = {1}; bins high = {2}; }
         src_class_cp: coverpoint current_src_class { bins low = {0}; bins r9 = {1}; bins high = {2}; }
@@ -125,7 +127,7 @@ class cpu_coverage_collector extends uvm_component;
     endfunction
 
     function automatic bit is_branch_opcode(bit [7:0] opcode);
-        return opcode inside {8'h40, 8'h41, 8'h43, 8'h44, 8'h45, 8'h46, 8'h47, 8'h80};
+        return opcode inside {8'h40, 8'h41, 8'h43, 8'h44, 8'h45, 8'h46, 8'h47, 8'h80, 8'hF0, 8'hF1};
     endfunction
 
     function automatic bit [15:0] sign_extend8(bit [7:0] value);
@@ -161,6 +163,8 @@ class cpu_coverage_collector extends uvm_component;
             8'h81: return "MVRD";
             8'h82: return "LDRR";
             8'h83: return "STRR";
+            8'hF0: return "CALLA";
+            8'hF1: return "RET";
             default: return $sformatf("OP_%02h", opcode);
         endcase
     endfunction
@@ -208,6 +212,8 @@ class cpu_coverage_collector extends uvm_component;
         add_bin("opcode_MVRD", "opcode", "MVRD");
         add_bin("opcode_LDRR", "opcode", "LDRR");
         add_bin("opcode_STRR", "opcode", "STRR");
+        add_bin("opcode_CALLA", "opcode", "CALLA");
+        add_bin("opcode_RET", "opcode", "RET");
 
         add_bin("dst_low", "register");
         add_bin("dst_r9", "register");
@@ -268,6 +274,8 @@ class cpu_coverage_collector extends uvm_component;
         add_bin("jrnz_taken", "branch", "JRNZ");
         add_bin("jrnz_not_taken", "branch", "JRNZ");
         add_bin("jmpa_absolute", "branch", "JMPA");
+        add_bin("calla_relative", "branch", "CALLA");
+        add_bin("ret_link_return", "branch", "RET");
 
         add_bin("clc_clears_carry", "flag_ctrl", "CLC");
         add_bin("stc_sets_carry", "flag_ctrl", "STC");
@@ -329,7 +337,7 @@ class cpu_coverage_collector extends uvm_component;
         if (item.s) hit_bin("flag_s_set"); else hit_bin("flag_s_clear");
         if (item.v) hit_bin("flag_v_set"); else hit_bin("flag_v_clear");
 
-        if ((item.opcode inside {8'h00, 8'h01, 8'h02, 8'h03, 8'h04, 8'h05, 8'h06, 8'h07, 8'h08, 8'h09, 8'h0A, 8'h0B, 8'h0C, 8'h0D, 8'h78, 8'h7A}) &&
+        if ((item.opcode inside {8'h00, 8'h01, 8'h02, 8'h03, 8'h04, 8'h05, 8'h06, 8'h07, 8'h08, 8'h09, 8'h0A, 8'h0B, 8'h0C, 8'h0D, 8'h78, 8'h7A, 8'hF1}) &&
             (item.pc == (item.instr_addr + 16'h0001))) begin
             hit_bin("single_word_pc_step");
         end
@@ -337,7 +345,7 @@ class cpu_coverage_collector extends uvm_component;
             hit_bin("two_cycle_single_word_pc_step");
             hit_bin("two_cycle_mem_instr");
         end
-        if (item.opcode inside {8'h80, 8'h81}) begin
+        if (item.opcode inside {8'h80, 8'h81, 8'h84, 8'h85, 8'hF0}) begin
             hit_bin("double_word_pc_step");
         end
     endfunction
@@ -420,6 +428,8 @@ class cpu_coverage_collector extends uvm_component;
             8'h46: if (item.branch_taken) hit_bin("jrz_taken"); else hit_bin("jrz_not_taken");
             8'h47: if (item.branch_taken) hit_bin("jrnz_taken"); else hit_bin("jrnz_not_taken");
             8'h80: hit_bin("jmpa_absolute");
+            8'hF0: hit_bin("calla_relative");
+            8'hF1: hit_bin("ret_link_return");
             default: begin end
         endcase
     endfunction

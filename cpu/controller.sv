@@ -62,13 +62,15 @@ module controller (
     localparam logic [2:0] ALU_IN_MEM                = 3'b101; // A=0, B=存储器数据
     localparam logic [2:0] ALU_IN_DR_MEM             = 3'b110; // A=存储器数据, B=DR
 
-    localparam logic [3:0] LINK_REGISTER_INDEX       = 4'hF;   // CALL流程使用的链接寄存器号
+    localparam logic [3:0] LINK_REGISTER_INDEX       = 4'hF;   // CALL/RET 共享的链接寄存器号
+    localparam logic [7:0] OPCODE_CALLA              = 8'hF0;  // 双字 C 类调用：R15 <- return PC, PC <- target
+    localparam logic [7:0] OPCODE_RET                = 8'hF1;  // 单字返回：PC <- R15
 
     logic [7:0] opcode;                               // 指令高8位opcode: instruction[15:8]
     logic [7:0] imm8;                                 // 指令低8位立即数字段: instruction[7:0]
     logic [3:0] dest_reg_index;                       // 目标寄存器编号: instruction[7:4]
     logic [3:0] source_reg_index;                     // 源寄存器编号: instruction[3:0]
-    logic [1:0] writeback_select;                     // 内部写回选择(用于生成reg/pc写使能)
+    logic [1:0] writeback_select;                     // 内部写回选择：bit0=reg_we, bit1=pc_we
 
     task automatic use_reg_operands;
         begin
@@ -95,6 +97,12 @@ module controller (
         wr                      = 1'b1;              // 默认存储器读模式
         writeback_select        = WRITEBACK_HOLD;    // 默认不写回寄存器/PC
 
+        // controller 的写法是“先给一套安全默认值，再按阶段/指令覆写必要字段”。
+        // 这样像 RET/CALLA 这类控制流指令就能天然保证：
+        //   - 默认不写 flags
+        //   - 默认不写普通寄存器
+        //   - 默认不改地址总线
+        // 只有真正需要的控制信号才被显式拉起。
         case (execution_stage)
             STAGE_RESET_INIT: begin
             end
@@ -109,7 +117,8 @@ module controller (
             STAGE_FETCH_DECODE: begin
                 instruction_load_enable = 1'b1;
             end
-            //单字指令
+            // 单字指令统一在一个执行拍完成。
+            // 这里既包含普通 ALU 指令，也包含 JR/CLC/STC，以及新增的 RET。
             STAGE_EXECUTE_SINGLE: begin
                 case (opcode)
                     8'h00: begin use_reg_operands(); sst = SST_WRITE; writeback_select = WRITEBACK_REG; alu_func = ALU_ADD; end
@@ -137,11 +146,25 @@ module controller (
                     8'h43: begin offset = imm8; writeback_select = s ? WRITEBACK_HOLD : WRITEBACK_PC; alu_in_sel = ALU_IN_BR; end
                     8'h78: begin offset = imm8; sst = SST_CLR_C; end
                     8'h7A: begin offset = imm8; sst = SST_SET_C; end
+                    OPCODE_RET: begin
+                        // RET 是“无操作数字段”的指令，不能去信 instruction[3:0]。
+                        // 这里强制把 source 端绑到 R15，并复用已有的
+                        //   ALU_IN_SR + WRITEBACK_PC
+                        // 数据通路完成 PC <- SR。
+                        //
+                        // 注意：dest_reg 维持默认值，writeback_select 只开 PC 位，
+                        // 因此 RET 不会写普通寄存器，也不会改 flags。
+                        sour_reg         = LINK_REGISTER_INDEX;
+                        writeback_select = WRITEBACK_PC;
+                        alu_in_sel       = ALU_IN_SR;
+                    end
                     default: begin
                     end
                 endcase
             end
-            //双字指令第一阶段准备好第二个操作数/地址/目标字 添加指令opcode:8'h84,8'h85
+            // 双字指令第一阶段的职责只有一个：把“下一字”准备好。
+            // 对立即数/绝对地址类，就是 address_bus <- PC 且 PC 自增；
+            // 对寄存器间接访存类，则是先把有效地址算出来送到 address_bus。
             STAGE_FETCH_SECOND_WORD: begin
                 use_reg_operands();
                 case (opcode)
@@ -151,7 +174,7 @@ module controller (
                     8'h81,
                     8'h84,
                     8'h85,
-                    8'hF0: begin
+                    OPCODE_CALLA: begin
                         carry_in_select      = CARRY_IN_ONE;
                         writeback_select     = WRITEBACK_PC;
                         alu_in_sel           = ALU_IN_PC;
@@ -171,7 +194,9 @@ module controller (
                     end
                 endcase
             end
-            //双字指令第二阶段执行操作
+            // 普通双字指令在这里退休。
+            // CALLA 不走这个分支，它会在前一个阶段之后切去
+            // SAVE_RETURN_ADDRESS / LOAD_CALL_TARGET 两拍序列。
             STAGE_EXECUTE_DOUBLE: begin
                 use_reg_operands();
                 case (opcode)
@@ -209,13 +234,17 @@ module controller (
                     end
                 endcase
             end
-            // CALLA取完保留第二字后，保存返回地址。
+            // CALLA 第 1 拍执行：把“CALLA 后继顺序地址”写进 R15。
+            // 此时 PC 已在取第二字时自增到 PC_after_calla，因此直接选择
+            // ALU_IN_PC 即可把该值旁路到写回口。
             STAGE_SAVE_RETURN_ADDRESS: begin
                 dest_reg          = LINK_REGISTER_INDEX;
                 writeback_select  = WRITEBACK_REG;
                 alu_in_sel        = ALU_IN_PC;
             end
-            // CALLA的第二字保留不用；目标为第二字之后PC加signed rel8。
+            // CALLA 第 2 拍执行：目标 = PC_after_calla + signext(rel8)。
+            // 第二字虽然目前保留不用，但保留双字格式可复用现有 fetch 第二字节拍，
+            // 同时让 link address 和 branch base 都统一落在 PC_after_calla。
             STAGE_LOAD_CALL_TARGET: begin
                 offset           = imm8;
                 writeback_select = WRITEBACK_PC;
@@ -225,7 +254,9 @@ module controller (
             end
         endcase
 
-        reg_write_enable = writeback_select[0];      // 译码得到寄存器堆写使能
-        pc_write_enable  = writeback_select[1];      // 译码得到PC写使能
+        // writeback_select 只在 always_comb 末尾集中展开成具体使能，
+        // 这样前面的各条 opcode 只需要描述“结果写回到哪儿”，不用重复写位级细节。
+        reg_write_enable = writeback_select[0];
+        pc_write_enable  = writeback_select[1];
     end
 endmodule

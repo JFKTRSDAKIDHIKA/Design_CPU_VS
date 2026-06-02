@@ -2,6 +2,9 @@ interface cpu_core_if(input logic clk);
     localparam int MEM_DEPTH = 65536;
     localparam logic [2:0] STAGE_EXECUTE_SINGLE = 3'b011;
     localparam logic [2:0] STAGE_EXECUTE_DOUBLE = 3'b111;
+    localparam logic [2:0] STAGE_LOAD_CALL_TARGET = 3'b110;
+    localparam logic [2:0] STAGE_FETCH_DECODE = 3'b001;
+    localparam logic [2:0] STAGE_FETCH_SECOND_WORD = 3'b101;
 
     logic        reset;
     logic        wr;
@@ -20,9 +23,13 @@ interface cpu_core_if(input logic clk);
 
     logic [15:0] mem [0:MEM_DEPTH-1];
     logic [2:0]  prev_exec_stage;
-    logic [15:0] retire_instr_addr;
+    logic [15:0] current_seq_pc;
     logic [15:0] prev_dbg_pc;
     logic [15:0] prev_dbg_ir;
+    logic        prev_c;
+    logic        prev_z;
+    logic        prev_v;
+    logic        prev_s;
     int unsigned halt_loop_count;
 
     assign data_bus = (reset && (wr === 1'b1)) ? mem[address_bus] : 16'hzzzz;
@@ -32,9 +39,13 @@ interface cpu_core_if(input logic clk);
         sel           = 2'b00;
         reg_sel       = 4'h0;
         prev_exec_stage = 3'b100;
-        retire_instr_addr = 16'h0000;
+        current_seq_pc = 16'h0000;
         prev_dbg_pc    = 16'h0000;
         prev_dbg_ir    = 16'h0000;
+        prev_c         = 1'b0;
+        prev_z         = 1'b0;
+        prev_v         = 1'b0;
+        prev_s         = 1'b0;
         halt_loop_count = 0;
     endtask
 
@@ -104,11 +115,11 @@ interface cpu_core_if(input logic clk);
     always @(negedge clk) begin
         if (!reset) begin
             prev_exec_stage <= 3'b100;
-            retire_instr_addr <= 16'h0000;
+            current_seq_pc <= 16'h0000;
         end else begin
             prev_exec_stage <= exec_stage;
-            if (exec_stage == 3'b000) begin
-                retire_instr_addr <= address_bus;
+            if ((exec_stage == STAGE_FETCH_DECODE) || (exec_stage == STAGE_FETCH_SECOND_WORD)) begin
+                current_seq_pc <= dbg_pc;
             end
         end
     end
@@ -132,91 +143,31 @@ interface cpu_core_if(input logic clk);
                 $error("[cpu_core_if] address_bus contains X while reset is active");
             end
 
-            if ((prev_exec_stage == STAGE_EXECUTE_SINGLE) || (prev_exec_stage == STAGE_EXECUTE_DOUBLE)) begin
+            if ((prev_exec_stage == STAGE_EXECUTE_SINGLE) || (prev_exec_stage == STAGE_EXECUTE_DOUBLE) || (prev_exec_stage == STAGE_LOAD_CALL_TARGET)) begin
                 logic [7:0] opcode;
-                logic [15:0] expected_pc;
                 opcode = dbg_ir[15:8];
-                expected_pc = retire_instr_addr + ((opcode inside {8'h80, 8'h81}) ? 16'h0002 : 16'h0001);
 
                 case (opcode)
-                    8'h40: begin
-                        if (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF)) begin
-                            $error("[cpu_core_if] JR PC update mismatch");
+                    8'hF0: begin
+                        if ((c !== prev_c) || (z !== prev_z) || (v !== prev_v) || (s !== prev_s)) begin
+                            $error("[cpu_core_if] CALLA modified flags unexpectedly");
                         end
                     end
-                    8'h41: begin
-                        if (s && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRS taken PC update mismatch");
-                        end
-                        if (!s && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRS not-taken PC update mismatch");
-                        end
-                    end
-                    8'h43: begin
-                        if (!s && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRNS taken PC update mismatch");
-                        end
-                        if (s && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRNS not-taken PC update mismatch");
-                        end
-                    end
-                    8'h44: begin
-                        if (c && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRC taken PC update mismatch");
-                        end
-                        if (!c && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRC not-taken PC update mismatch");
-                        end
-                    end
-                    8'h45: begin
-                        if (!c && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRNC taken PC update mismatch");
-                        end
-                        if (c && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRNC not-taken PC update mismatch");
-                        end
-                    end
-                    8'h46: begin
-                        if (z && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRZ taken PC update mismatch");
-                        end
-                        if (!z && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRZ not-taken PC update mismatch");
-                        end
-                    end
-                    8'h47: begin
-                        if (!z && (dbg_pc !== ((retire_instr_addr + 16'h0001 + sign_extend8(dbg_ir[7:0])) & 16'hFFFF))) begin
-                            $error("[cpu_core_if] JRNZ taken PC update mismatch");
-                        end
-                        if (z && (dbg_pc !== expected_pc)) begin
-                            $error("[cpu_core_if] JRNZ not-taken PC update mismatch");
-                        end
-                    end
-                    8'h80: begin
-                        if (dbg_pc !== mem[(retire_instr_addr + 16'h0001) & 16'hFFFF]) begin
-                            $error("[cpu_core_if] JMPA PC update mismatch");
-                        end
-                    end
-                    8'h81: begin
-                        if (dbg_pc !== (retire_instr_addr + 16'h0002)) begin
-                            $error("[cpu_core_if] MVRD did not advance PC by 2");
+                    8'hF1: begin
+                        if ((c !== prev_c) || (z !== prev_z) || (v !== prev_v) || (s !== prev_s)) begin
+                            $error("[cpu_core_if] RET modified flags unexpectedly");
                         end
                     end
                     default: begin end
                 endcase
             end
 
-            if (dbg_ir == 16'h40FF) begin
-                if ((prev_dbg_ir == 16'h40FF) && (dbg_pc !== prev_dbg_pc)) begin
-                    $error("[cpu_core_if] HALT self-loop changed PC unexpectedly");
-                end
-                halt_loop_count <= halt_loop_count + 1;
-            end else begin
-                halt_loop_count <= 0;
-            end
-
             prev_dbg_pc <= dbg_pc;
             prev_dbg_ir <= dbg_ir;
+            prev_c <= c;
+            prev_z <= z;
+            prev_v <= v;
+            prev_s <= s;
         end
     end
 endinterface

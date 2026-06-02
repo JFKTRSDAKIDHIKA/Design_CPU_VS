@@ -17,9 +17,19 @@ module execution_stage_fsm (
 
     execution_stage_state_t current_state;
     logic is_complex_instruction;
+    logic needs_second_word;
 
     always_comb begin
+        // C 类目前只有 CALLA。它虽然和普通双字指令一样先取第二字，
+        // 但执行阶段不是直接退休，而是要额外多走两拍：
+        //   1. 把返回地址写进 R15
+        //   2. 再把目标地址写进 PC
         is_complex_instruction = (inst[15:8] == 8'hF0);
+
+        // 旧版本曾用 inst[15] 来粗分单字/双字，但现在不再成立：
+        // RET = F100 也是单字指令，若只看 bit15，会被误判成需要取第二字。
+        // 因此这里显式列出“真的需要额外取字”的 opcode 集合。
+        needs_second_word = inst[15:8] inside {8'h80, 8'h81, 8'h82, 8'h83, 8'h84, 8'h85, 8'hF0};
     end
 
     always_ff @(posedge clk or negedge reset) begin
@@ -30,14 +40,18 @@ module execution_stage_fsm (
                 state0: current_state <= state1;
                 state1: current_state <= state2;
                 state2: begin
-                    if (inst[15] == 1'b0) begin
-                        current_state <= state3;
-                    end else begin
+                    // 取指译码拍结束后，先决定“下一拍到底是单字执行还是继续取第二字”。
+                    // 这一步直接决定了 RET 会走普通单拍执行，而 CALLA 会走双字路径。
+                    if (needs_second_word) begin
                         current_state <= state4;
+                    end else begin
+                        current_state <= state3;
                     end
                 end
                 state3: current_state <= state1;
                 state4: begin
+                    // 普通双字指令在取到 extension word 后直接执行；
+                    // CALLA 则要切到专门的两拍返回地址/跳转目标序列。
                     if (is_complex_instruction) begin
                         current_state <= state6;
                     end else begin
@@ -54,6 +68,8 @@ module execution_stage_fsm (
 
     always_comb begin
         case (current_state)
+            // stage_code 是 controller/monitor/testbench 共同使用的“外部可见阶段编码”。
+            // 这里保持既有编码不变，避免破坏已有 VCS/UVM/Verilator 观测逻辑。
             state0: stage_code = 3'b100;
             state1: stage_code = 3'b000;
             state2: stage_code = 3'b001;

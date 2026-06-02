@@ -46,6 +46,7 @@ SINGLE_BRANCH = {
 NO_OPERAND = {
     "CLC": 0x7800,
     "STC": 0x7A00,
+    "RET": 0xF100,
 }
 
 DOUBLE_WORD = {
