@@ -4,7 +4,7 @@
 （A/B/C 类指令）实现**，以及 **两套互补的功能验证流水**（VCS+UVM 与
 Verilator+C++ Golden 差分）。
 
-按 "微架构 → ISA → 测试 → 结果" 顺序组织本文档。
+按 "微架构 → ISA → 测试 → 结果 → 后端实现" 顺序组织本文档。
 
 ---
 
@@ -434,6 +434,78 @@ A/B/C 扩展的语义；当前新指令的功能签收主要靠 Verilator 差分
 
 ---
 
+## 第四部分：后端实现
+
+仓库内已经补充了一套可实际运行的 Synopsys 数字后端 flow，目录在：
+
+- [`backend_flow/`](backend_flow/)
+
+详细使用说明见：
+
+- [`backend_flow/README.md`](backend_flow/README.md)
+
+这一套 flow 覆盖：
+
+- `DC` 逻辑综合
+- `ICC2` 布局布线
+- `PT` 时序分析
+
+当前后端默认顶层不是原始 `cpu_top`，而是：
+
+- [`vsrc/cpu_pnr_top.sv`](vsrc/cpu_pnr_top.sv)
+- [`vsrc/cpu_pnr_core.sv`](vsrc/cpu_pnr_core.sv)
+
+这样做的原因是原始顶层里的 `inout data_bus` 不适合直接进入标准数字后端 flow，后端专用顶层把它拆成了更适合综合和 PnR 的形式。
+
+### 4.1 当前版图预览
+
+下面这张图来自 ICC2 `route_final` 数据库的真实 route / cell 数据渲染结果，用来展示这套 CPU 当前的后端实现形态：
+
+![backend layout](backend_flow/docs/layout_viewer_style.jpg)
+
+### 4.2 后端目录入口
+
+最关键的文件有：
+
+- [`backend_flow/config.tcl`](backend_flow/config.tcl): 全局配置
+- [`backend_flow/synth_dc.tcl`](backend_flow/synth_dc.tcl): DC 脚本
+- [`backend_flow/pnr_icc2.tcl`](backend_flow/pnr_icc2.tcl): ICC2 脚本
+- [`backend_flow/signoff_pt.tcl`](backend_flow/signoff_pt.tcl): PT 脚本
+- [`backend_flow/run_all.sh`](backend_flow/run_all.sh): 一键跑完整 flow
+- [`backend_flow/run_icc2_until_export_pass.sh`](backend_flow/run_icc2_until_export_pass.sh): 调 ICC2 导出阶段的重试脚本
+
+### 4.3 最常用的运行命令
+
+推荐分阶段跑，而不是一开始就一键跑：
+
+```bash
+cd backend_flow
+
+dc_shell -f synth_dc.tcl | tee logs/dc_synth.log
+icc2_shell -f pnr_icc2.tcl | tee logs/icc2_pnr.log
+pt_shell -f signoff_pt.tcl | tee logs/pt_signoff.log
+```
+
+如果只是想先快速确认 ICC2 导出链路是否打通，可以用：
+
+```bash
+cd backend_flow
+ICC2_FAST_DEBUG=1 MAX_ITERS=1 ./run_icc2_until_export_pass.sh
+```
+
+### 4.4 当前后端主要产物
+
+典型输出位于 `backend_flow/out/`，例如：
+
+- 网表: [`backend_flow/out/dc/cpu_pnr_top_syn.v`](backend_flow/out/dc/cpu_pnr_top_syn.v)
+- DEF: [`backend_flow/out/icc2/cpu_pnr_top.def`](backend_flow/out/icc2/cpu_pnr_top.def)
+- SPEF: [`backend_flow/out/icc2/cpu_pnr_top.spef.nomTLU_25.spef`](backend_flow/out/icc2/cpu_pnr_top.spef.nomTLU_25.spef)
+- GDS: [`backend_flow/out/icc2/cpu_pnr_top.gds`](backend_flow/out/icc2/cpu_pnr_top.gds)
+
+如果你只是想从总 README 快速跳过去看后端细节，直接打开 [`backend_flow/README.md`](backend_flow/README.md) 就够了。
+
+---
+
 ## 附录：仓库结构
 
 ```
@@ -457,6 +529,7 @@ A/B/C 扩展的语义；当前新指令的功能签收主要靠 Verilator 差分
 │   ├── reference_model.py # Python 参考模型（UVM oracle）
 │   ├── generate_random_tests.py
 │   └── compare_results.py
+├── backend_flow/          # Synopsys RTL-to-GDSII flow（DC / ICC2 / PT）
 ├── sw/                    # 汇编测试程序
 │   ├── abc_diff.asm       # A/B/C 差分长测试
 │   ├── tests/             # directed / corner / random
