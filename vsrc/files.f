@@ -11,4 +11,5 @@ vsrc/reg_testa.sv
 vsrc/t1.sv
 vsrc/t2.sv
 vsrc/execution_stage_fsm.sv
-
+vsrc/cpu_pnr_core.sv
+vsrc/cpu_pnr_top.sv

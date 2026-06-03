@@ -64,3 +64,23 @@ ucli.key
 
 verilator_tb/obj_dir
 verilator_tb/obj_dir_diff
+
+# Local PDK / EDA collateral
+USC-3N-2D/
+
+# Backend flow generated artifacts
+backend_flow/alib-*/
+backend_flow/cksum_dir/
+backend_flow/libcache/*.db
+backend_flow/logs/
+backend_flow/out/
+backend_flow/pdk_cache/
+backend_flow/reports/
+backend_flow/work_dir/
+backend_flow/*.mr
+backend_flow/*.pvl
+backend_flow/*.syn
+backend_flow/*.svf
+backend_flow/command.log
+backend_flow/icc2_command.log
+backend_flow/icc2_output.txt
